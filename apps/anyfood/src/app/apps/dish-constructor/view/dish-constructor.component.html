@@ -1,0 +1,19 @@
+<form class="flex flex-col gap-3" [formGroup]="form">
+  <button (click)="createStep()">Створити крок</button>
+  <div class="flex flex-col">
+    <label>Назва</label>
+    <input [formControl]="this.form.controls.name">
+  </div>
+
+  <div class="flex flex-col">
+    <label>Опис</label>
+    <input [formControl]="this.form.controls.description">
+  </div>
+
+  <div>
+    <button>Створити крок</button>
+  </div>
+
+</form>
+
+<ingredients-search></ingredients-search>

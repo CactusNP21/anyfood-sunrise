@@ -21,7 +21,7 @@
             "input": "apps/anyfood/public"
           }
         ],
-        "styles": ["apps/anyfood/src/styles.scss"],
+        "styles": ["apps/anyfood/src/styles.css"],
         "server": "apps/anyfood/src/main.server.ts",
         "ssr": {
           "entry": "apps/anyfood/src/server.ts"

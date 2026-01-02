@@ -1,0 +1,7 @@
+<svg viewBox="0 0 300 20" class="separator-deco">
+  <rect x="0" y="10" width="8" height="8" transform="rotate(45 4 14)" />
+
+  <path d="M15,14 L285,14" stroke-width="1" stroke="black" />
+
+  <rect x="292" y="10" width="8" height="8" transform="rotate(45 296 14)" />
+</svg>
