@@ -17,8 +17,9 @@ export class IngredientClient {
     return this.http.get(this.serverUrl);
   }
 
+  // TODO
   searchIngredients(name: string) {
-    return this.http.post(this.serverUrl, {name});
+    return this.http.post<{name: string; id: string; img: string}[]>(`${this.serverUrl}/search`, {name});
   }
 
 }

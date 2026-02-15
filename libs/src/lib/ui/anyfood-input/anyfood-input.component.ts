@@ -1,14 +1,19 @@
-import {Component, input} from '@angular/core';
+import {Component, input, model} from '@angular/core';
 import {AnyfoodLabelComponent} from "@anyfood/ui";
+import {FormValueControl} from "@angular/forms/signals";
 
 @Component({
-  selector: 'lib-anyfood-input',
+  selector: 'anyfood-input',
   imports: [
     AnyfoodLabelComponent
   ],
   templateUrl: './anyfood-input.component.html',
   styleUrl: './anyfood-input.component.css'
 })
-export class AnyfoodInputComponent {
+export class AnyfoodInputComponent implements FormValueControl<string>{
+
+  value = model('');
+
   $label = input.required({alias: 'label'});
+  $placeholder = input('Введіть значення', {alias: 'placeholder'});
 }

@@ -1,6 +1,6 @@
-label {
+.option-text {
   font-family: 'Playfair Display', serif;
   font-weight: 500;
-  font-size: 16px;
-  color: #3e0000;
+  font-size: 13px;
+  color: black;
 }

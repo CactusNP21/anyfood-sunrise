@@ -1,4 +1,5 @@
-import {Component, input} from '@angular/core';
+import {Component, input, model} from '@angular/core';
+import {FormValueControl} from "@angular/forms/signals";
 
 @Component({
   selector: 'anyfood-label',
@@ -6,7 +7,9 @@ import {Component, input} from '@angular/core';
   templateUrl: './anyfood-label.component.html',
   styleUrl: './anyfood-label.component.css'
 })
-export class AnyfoodLabelComponent {
+export class AnyfoodLabelComponent implements FormValueControl<string> {
+  value = model('')
+
   $text = input.required({alias: 'text'});
 
   $controlId = input.required({alias: 'controlId'});
