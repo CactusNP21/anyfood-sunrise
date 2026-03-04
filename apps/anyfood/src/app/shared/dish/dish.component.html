@@ -1,0 +1,10 @@
+@let dish = $dish();
+
+<div class="p-3 border border-black flex flex-col">
+  <img width="120" height="120" [ngSrc]="dish.imageUrl" alt="title image" />
+  <p>{{dish.name}}</p>
+  @for (ingredient of dish.ingredients; track ingredient.id) {
+    <p>{{ingredient.name}} {{ingredient.weight}}g</p>
+  }
+  <ng-content></ng-content>
+</div>

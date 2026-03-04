@@ -4,17 +4,32 @@
   <!--    <label>Назва</label>-->
   <!--    <input [formControl]="this.form.controls.name">-->
   <!--  </div>-->
+  <anyfood-input [formField]="dishForm.name" label="Назва" />
+  <anyfood-input [formField]="dishForm.description" label="Опис" />
+  <anyfood-input [formField]="dishForm.imageUrl" label="Картинка" />
+  <anyfood-selection
+    [serverSearchFn]="ingredientsSearch"
+    [imgKey]="'imgUrl'"
+    [displayKey]="'name'"
+    primaryKey="id"
+    [formField]="dishForm.products"
+    label="Інгредієнти"
+  />
 
-  <anyfood-input [field]="form.description" label="Опис"/>
-  <anyfood-input [field]="form.name" label="Назва"/>
-  <anyfood-selection [serverSearchFn]="ingredientsSearch"
-                     [imgKey]="'img'"
-                     [displayKey]="'name'" primaryKey="id" [field]="form.ingredients" label="Інгредієнти"/>
-
-  <div>
-    <button>Створити крок</button>
+  <div class="flex gap-3">
+    @for (product of dishForm.products().value(); let index = $index; track product.id) {
+      <div class="group flex flex-col border border-b-black rounded p-4 relative ">
+        <button type="button" class="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                (click)="deleteProduct(product)"
+        >DEL
+        </button>
+        <span class="w-24 h-24"><img class="w-full h-full" alt="" [ngSrc]="product.imgUrl" width="96"
+                                     height="96" /></span>
+        <p>{{ product.name }}</p>
+        <anyfood-input label="Weight" [formField]="dishForm.products[index].weight" />
+      </div>
+    }
   </div>
 
 </form>
-
-<ingredients-search></ingredients-search>
+<button (click)="submitForm()">Submit form</button>

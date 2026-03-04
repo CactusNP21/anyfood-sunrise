@@ -22,7 +22,7 @@ export class HeaderComponent {
       label: 'Рецепти',
     },
     {
-      path: 'current-recipes',
+      path: "dish-list",
       label: 'Список страв',
     },
   ]);

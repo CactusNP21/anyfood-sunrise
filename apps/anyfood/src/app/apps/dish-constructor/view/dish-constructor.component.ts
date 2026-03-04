@@ -1,40 +1,82 @@
-import {Component, inject, signal} from "@angular/core";
-import {NonNullableFormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
-import {IngredientsSearchComponent} from "../features/ingredients-search/ingredients-search.component";
-import {AnyfoodInputComponent, AnyfoodSelectionComponent} from "@anyfood/ui";
-import {Field, form} from "@angular/forms/signals";
-import {IngredientClient} from "../../../core/api/ingredient/ingredient.client";
-import {firstValueFrom} from "rxjs";
+import { Component, effect, inject, signal } from '@angular/core';
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { AnyfoodInputComponent, AnyfoodSelectionComponent } from '@anyfood/ui';
+import { form, FormField, minLength, required } from '@angular/forms/signals';
+import { firstValueFrom, map } from 'rxjs';
+import { DishClient } from '../../../core/api/dish/dish.client';
+import {
+  IDish,
+  IDishCreateRequest,
+  IDishFormModel,
+} from '../../../core/models/dish.model';
+import { IIngredient } from '../../../core/models/ingredient.model';
+import { ProductsClient } from '../../../core/api/products/products.client';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'dish-constructor',
   templateUrl: 'dish-constructor.component.html',
   imports: [
     ReactiveFormsModule,
-    IngredientsSearchComponent,
     AnyfoodInputComponent,
     AnyfoodSelectionComponent,
-    Field
-  ]
+    FormField,
+    NgOptimizedImage,
+  ],
 })
 export class DishConstructorComponent {
   fb = inject(NonNullableFormBuilder);
-  ingredientsClient = inject(IngredientClient);
+  productClient = inject(ProductsClient);
+  dishClient = inject(DishClient);
 
-  $formModel = signal({
+  $formModel = signal<IDishFormModel>({
     name: '',
     description: '',
-    ingredients: []
-  })
-  form = form(this.$formModel);
+    imageUrl: '',
+    products: [],
+  });
 
+  dishForm = form(this.$formModel, (dishForm) => {
+    required(dishForm.name);
+    minLength(dishForm.products, 1);
+  });
 
-  ingredientsSearch = (input: string): Promise<{ id: string; name: string; img: string }[]> => {
-    return firstValueFrom(this.ingredientsClient.searchIngredients(input));
+  submitForm() {
+    const formValue = this.dishForm().value();
+    const dishIngredient: IDishCreateRequest['ingredients'] =
+      formValue.products.map((product) => {
+        return {
+          productId: product.id,
+          weight: product.weight,
+        };
+      });
+    this.dishClient
+      .createEntity({ ...formValue, ingredients: dishIngredient })
+      .subscribe();
   }
 
-  createStep() {
-
+  deleteProduct(productToDelete: IDishFormModel['products'][0]) {
+    this.$formModel.update((model) => ({
+      ...model,
+      products: model.products.filter(
+        (product) => product.id !== productToDelete.id
+      ),
+    }));
   }
 
+  ingredientsSearch = (input: string) => {
+    return firstValueFrom(
+      this.productClient
+        .getAllEntities()
+        .pipe(
+          map((products) =>
+            products.map((product) => ({ ...product, weight: '0' }))
+          )
+        )
+    );
+  };
 }

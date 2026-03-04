@@ -1,2 +1,13 @@
-<p>home works!</p>
-<button [routerLink]="'/dish'">Go to home</button>
+<button [routerLink]="'/create-product'">Create product</button>
+<button [routerLink]="'/dish-constructor'">Create dish</button>
+
+<div>
+  @let dishes = $dishes();
+  @if (dishes) {
+    @for (dish of dishes; track dish.id) {
+      <app-dish [dish]="dish">
+        <button (click)="addDishToList(dish)">+</button>
+      </app-dish>
+    }
+  }
+</div>

@@ -1,21 +1,28 @@
 import {
-  Component, computed,
+  Component,
+  computed,
   ElementRef,
   inject,
-  input, InputSignal, linkedSignal,
+  input,
+  InputSignal,
+  linkedSignal,
   model,
-  Renderer2, resource, runInInjectionContext,
+  Renderer2,
+  resource,
+  runInInjectionContext,
   signal,
   TemplateRef,
   viewChild,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
-import {AnyfoodLabelComponent} from "@anyfood/ui";
-import {Field, form, FormValueControl} from "@angular/forms/signals";
-import {CdkConnectedOverlay, CdkOverlayOrigin} from "@angular/cdk/overlay";
-import {NgOptimizedImage} from "@angular/common";
-import {Prettify} from "../../../../../apps/anyfood/src/app/core/types/prettify.type";
-import {of} from "rxjs";
+import { AnyfoodLabelComponent } from '../label/anyfood-label.component';
+import { form, FormField, FormValueControl } from '@angular/forms/signals';
+import {
+  CdkConnectedOverlay,
+  CdkOverlayOrigin,
+  ConnectedPosition,
+} from '@angular/cdk/overlay';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'anyfood-selection',
@@ -23,75 +30,133 @@ import {of} from "rxjs";
     AnyfoodLabelComponent,
     CdkOverlayOrigin,
     CdkConnectedOverlay,
-    Field,
-    NgOptimizedImage
+    NgOptimizedImage,
+    FormField,
   ],
   templateUrl: './anyfood-selection.component.html',
   styleUrl: './anyfood-selection.component.css',
 })
-export class AnyfoodSelectionComponent<T, O extends {}> implements FormValueControl<T[]> {
-
-  isOpen = false;
+export class AnyfoodSelectionComponent<T extends {}>
+  implements FormValueControl<T[]>
+{
+  $isOverlayOpen = signal(false);
 
   value = model<T[]>([]);
-  $options = model<O[]>([], {alias: 'options'});
+  $options = model<T[]>([], { alias: 'options' });
 
-  $label = input.required({alias: 'label'});
-  $placeholder = input('Введіть значення', {alias: 'placeholder'});
-  $primaryKey = input.required<keyof O>({alias: 'primaryKey'});
-  $displayKey = input.required<keyof O>({alias: 'displayKey'});
+  $label = input.required({ alias: 'label' });
+  $placeholder = input('Введіть значення', { alias: 'placeholder' });
+  $primaryKey = input.required<keyof T>({ alias: 'primaryKey' });
+  $displayKey = input.required<keyof T>({ alias: 'displayKey' });
 
-  $imgKey = input.required<keyof {
-    [K in keyof O]: O[K] extends string
-      ? O[K]
-      : never
-  }>({alias: 'imgKey'});
+  $imgKey = input.required<
+    keyof {
+      [K in keyof T]: T[K] extends string ? T[K] : never;
+    }
+  >({ alias: 'imgKey' });
 
-  getImg(option: O): string {
+  $valueMap = computed(() => {
+    const value = this.value();
+    const map = new Map<any, T>();
+    value.forEach((item) => {
+      map.set(item[this.$primaryKey()] as string, item);
+    });
+    return map;
+  });
+
+  getImg(option: T): string {
     const imgKey = this.$imgKey();
 
-    return option[imgKey as keyof O] as string || 'empty';
+    return (option[imgKey as keyof T] as string) || 'empty';
   }
 
-  $serverSearchFn = input<((input: string) => Promise<O[]>) | null>(null, {alias: 'serverSearchFn'});
+  $serverSearchFn = input<((input: string) => Promise<T[]>) | null>(null, {
+    alias: 'serverSearchFn',
+  });
 
   $input = form(signal(''));
 
   optionsResource = resource({
-    params: () => ({input: this.$input().value()}),
+    params: () => ({ input: this.$input().value() }),
     stream: async (param) => {
       const ssf = this.$serverSearchFn();
-      return signal({value: await ssf!(param.params.input)})
+      return signal({ value: await ssf!(param.params.input) });
     },
-  })
+  });
 
-  $optionsList = linkedSignal<O[] | undefined, O[]>({
+  $optionsList = linkedSignal<T[] | undefined, T[]>({
     source: this.optionsResource.value,
     computation: (newOptions, previous) => {
-      let result = []
+      let result = [];
       if (newOptions === undefined) result = previous?.value ?? [];
       else result = newOptions;
       return result;
-    }
-  })
-
+    },
+  });
 
   private filterOptions(input: string) {
     const displayKey = this.$displayKey();
     const options = this.$options();
 
-    const filteredOptions = options.filter(opt => {
+    const filteredOptions = options.filter((opt) => {
       const val = opt[displayKey] as string;
       return val.includes(input);
-    })
+    });
 
-    return new Promise<O[]>(() => filteredOptions)
+    return new Promise<T[]>(() => filteredOptions);
   }
 
-  toggleOption(option: O) {
+  openOverlay() {
+    this.$isOverlayOpen.set(true);
+  }
+
+  closeOverlay() {
+    if (this.$isOverlayOpen()) {
+      this.$isOverlayOpen.set(false);
+    }
+  }
+
+  toggleOption(option: T) {
     const primaryKey = this.$primaryKey();
-    // this.value.update((currentValue) => {
-    //   currentValue.find((v) => v[primaryKey] === option[primaryKey])
-    // })
+    const map = this.$valueMap();
+
+    if (map.has(option[primaryKey])) {
+      this.value.update((current) =>
+        current.filter((value) => value[primaryKey] !== option[primaryKey])
+      );
+      return;
+    }
+
+    this.value.update((currentValue) => [...currentValue, option]);
   }
+
+  positions: ConnectedPosition[] = [
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'top',
+    },
+    {
+      originX: 'end',
+      originY: 'bottom',
+      overlayX: 'end',
+      overlayY: 'top',
+    },
+    {
+      originX: 'start',
+      originY: 'top',
+      overlayX: 'start',
+      overlayY: 'bottom',
+      panelClass: 'mat-mdc-select-panel-above',
+    },
+    {
+      originX: 'end',
+      originY: 'top',
+      overlayX: 'end',
+      overlayY: 'bottom',
+      panelClass: 'mat-mdc-select-panel-above',
+    },
+  ];
+  protected readonly close = close;
 }
