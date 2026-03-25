@@ -3,4 +3,5 @@ export interface IIngredient {
   productId: number;
   weight: string;
   name: string;
+  price: string;
 }

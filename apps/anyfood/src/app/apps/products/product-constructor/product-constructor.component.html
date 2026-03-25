@@ -1,0 +1,185 @@
+<div class="min-h-screen bg-[#0a0a0a] text-white p-5 lg:p-8" style="font-family:'Outfit',sans-serif">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <div class="max-w-xl mx-auto">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <p class="text-[11px] tracking-widest text-green-500 uppercase mb-2" style="font-family:'JetBrains Mono',monospace">
+        {{ $isEditMode() ? '— Edit' : '— New' }}
+      </p>
+      <h1 class="text-[2.4rem] font-extrabold leading-none tracking-tight">
+        {{ $isEditMode() ? 'Edit' : 'Create' }}<br>
+        <span class="text-green-500">Product</span>
+      </h1>
+    </div>
+
+    <form novalidate class="space-y-4">
+
+      <!-- Name -->
+      <div>
+        <label class="block text-[10px] tracking-widest text-zinc-500 uppercase mb-1.5" style="font-family:'JetBrains Mono',monospace">
+          Name <span class="text-green-500">*</span>
+        </label>
+        <div class="bg-[#141414] border rounded-xl px-4 py-3.5 transition-colors duration-150"
+             [class.border-zinc-800]="!isInvalid('name')"
+             [class.border-red-500]="isInvalid('name')">
+          <input [formField]="createProductForm.name" type="text" placeholder="e.g. Grilled Chicken Breast"
+                 class="w-full bg-transparent text-[15px] font-medium placeholder:text-zinc-700 focus:outline-none" />
+        </div>
+        @if (isInvalid('name')) {
+          <p class="text-[11px] text-red-400 mt-1.5 ml-1" style="font-family:'JetBrains Mono',monospace">
+            Required · min 2 · max 200 characters
+          </p>
+        }
+      </div>
+
+      <!-- Category -->
+      <div>
+        <label class="block text-[10px] tracking-widest text-zinc-500 uppercase mb-1.5" style="font-family:'JetBrains Mono',monospace">
+          Category <span class="text-green-500">*</span>
+        </label>
+        @if (facade.$categoriesLoading()) {
+          <div class="bg-[#141414] border border-zinc-800 rounded-xl px-4 py-3.5 flex items-center gap-3">
+            <span class="w-4 h-4 border-2 border-zinc-700 border-t-green-500 rounded-full animate-spin block"></span>
+            <span class="text-xs text-zinc-600" style="font-family:'JetBrains Mono',monospace">Loading categories…</span>
+          </div>
+        } @else {
+          <div class="bg-[#141414] border rounded-xl relative transition-colors duration-150"
+               [class.border-zinc-800]="!isInvalid('categoryId')"
+               [class.border-red-500]="isInvalid('categoryId')">
+            <select [formField]="createProductForm.categoryId"
+                    class="w-full bg-transparent px-4 py-3.5 text-[15px] font-medium focus:outline-none appearance-none cursor-pointer pr-10 [&>option]:bg-[#141414]">
+              <option value="" disabled>Choose a category…</option>
+              @for (cat of facade.$categories(); track cat.id) {
+                <option [value]="cat.id">{{ cat.name }}</option>
+              }
+            </select>
+            <svg class="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600 pointer-events-none" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        }
+        @if (isInvalid('categoryId')) {
+          <p class="text-[11px] text-red-400 mt-1.5 ml-1" style="font-family:'JetBrains Mono',monospace">Category is required</p>
+        }
+      </div>
+
+      <!-- Nutrition -->
+      <div>
+        <label class="block text-[10px] tracking-widest text-zinc-500 uppercase mb-1.5" style="font-family:'JetBrains Mono',monospace">
+          Nutrition · per 100g <span class="text-green-500">*</span>
+        </label>
+        <div class="grid grid-cols-2 gap-2.5">
+          @for (f of nutritionFields; track f.key) {
+            <div class="bg-[#141414] border rounded-xl p-4 transition-colors duration-150"
+                 [class.border-zinc-800]="!isInvalid(f.key)"
+                 [class.border-red-500]="isInvalid(f.key)">
+              <span class="block text-[9px] tracking-widest uppercase mb-1" [style.color]="f.color"
+                    style="font-family:'JetBrains Mono',monospace">{{ f.label }}</span>
+              <div class="flex items-baseline gap-1.5">
+                <input [formControlName]="f.key" type="number" [placeholder]="f.placeholder"
+                       min="0" step="0.1"
+                       class="w-full bg-transparent text-xl font-bold focus:outline-none placeholder:text-zinc-800" />
+                <span class="text-[11px] text-zinc-600 shrink-0" style="font-family:'JetBrains Mono',monospace">{{ f.unit }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Glycemic Index + Price -->
+      <div class="grid grid-cols-2 gap-2.5">
+        <div class="bg-[#141414] border border-zinc-800 rounded-xl p-4">
+          <span class="block text-[9px] tracking-widest text-zinc-500 uppercase mb-1"
+                style="font-family:'JetBrains Mono',monospace">Glycemic Index</span>
+          <div class="flex items-baseline gap-1.5">
+            <input [formField]="createProductForm.glycemicIndex" type="number" placeholder="0"
+                   class="w-full bg-transparent text-xl font-bold focus:outline-none placeholder:text-zinc-800" />
+            <span class="text-[11px] text-zinc-600" style="font-family:'JetBrains Mono',monospace">GI</span>
+          </div>
+        </div>
+
+        <div class="bg-[#141414] border rounded-xl p-4 transition-colors duration-150"
+             [class.border-zinc-800]="!isInvalid('price')"
+             [class.border-red-500]="isInvalid('price')">
+          <span class="block text-[9px] tracking-widest text-zinc-500 uppercase mb-1"
+                style="font-family:'JetBrains Mono',monospace">Price <span class="text-green-500">*</span></span>
+          <div class="flex items-baseline gap-1.5">
+            <span class="text-zinc-500 text-sm" style="font-family:'JetBrains Mono',monospace">₴</span>
+            <input [formField]="createProductForm.price" type="number" placeholder="0.00" step="0.01"
+                   class="w-full bg-transparent text-xl font-bold focus:outline-none placeholder:text-zinc-800" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Image URL -->
+      <div>
+        <label class="block text-[10px] tracking-widest text-zinc-500 uppercase mb-1.5" style="font-family:'JetBrains Mono',monospace">
+          Image URL <span class="text-zinc-700">(optional)</span>
+        </label>
+        <div class="bg-[#141414] border border-zinc-800 rounded-xl px-4 py-3.5">
+          <input [formField]="createProductForm.imageUrl" type="url" placeholder="https://…"
+                 class="w-full bg-transparent text-[15px] font-medium placeholder:text-zinc-700 focus:outline-none" />
+        </div>
+        @if ($imagePreview()) {
+          <div class="mt-2.5 rounded-2xl overflow-hidden border border-zinc-800" style="height:160px">
+            <img [src]="$imagePreview()!" alt="Preview" class="w-full h-full object-cover" />
+          </div>
+        }
+      </div>
+
+      <!-- System toggle (admin only) -->
+      @if ($isAdmin()) {
+        <div class="bg-[#141414] border border-zinc-800 rounded-xl px-4 py-3.5 flex items-center justify-between">
+          <div>
+            <p class="text-[15px] font-semibold">System product</p>
+            <p class="text-[11px] text-zinc-500 mt-0.5" style="font-family:'JetBrains Mono',monospace">Visible to all users</p>
+          </div>
+          <button type="button" (click)="toggleIsSystem()"
+                  class="relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none"
+                  [style.background]="createProductForm.isSystem().value() ? '#16a34a' : '#262626'">
+            <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                  [class.translate-x-5]="createProductForm.isSystem().value()"></span>
+          </button>
+        </div>
+      }
+
+      <!-- Error -->
+      @if (facade.$saveError()) {
+        <div class="bg-red-950/60 border border-red-800/50 rounded-2xl px-4 py-3 flex items-center gap-3">
+          <svg class="w-4 h-4 text-red-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-[12px] text-red-400" style="font-family:'JetBrains Mono',monospace">{{ facade.$saveError() }}</span>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="onCancel()"
+                class="flex-1 py-4 rounded-2xl border border-zinc-800 text-sm font-semibold text-zinc-400
+                       hover:text-white hover:border-zinc-600 transition-all duration-150">
+          Cancel
+        </button>
+        <button type="submit" [disabled]="facade.$saving()"
+                class="flex-[2] py-4 rounded-2xl text-sm font-bold tracking-wide bg-green-600
+                       hover:bg-green-500 active:scale-[0.98] transition-all duration-150
+                       disabled:opacity-40 disabled:cursor-not-allowed">
+          @if (facade.$saving()) {
+            <span class="inline-flex items-center justify-center gap-2">
+              <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"/>
+                <path class="opacity-75" fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              Saving…
+            </span>
+          } @else {
+            {{ $isEditMode() ? 'Update Product' : 'Create Product' }}
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

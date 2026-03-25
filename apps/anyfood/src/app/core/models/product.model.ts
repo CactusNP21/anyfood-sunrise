@@ -11,3 +11,5 @@ export interface IProductCreateRequest {
   fats: string;
   protein: string;
 }
+
+

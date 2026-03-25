@@ -30,6 +30,12 @@
       },
       "configurations": {
         "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/anyfood/src/environments/environment.ts",
+              "with": "apps/anyfood/src/environments/environment.prod.ts"
+            }
+          ],
           "budgets": [
             {
               "type": "initial",

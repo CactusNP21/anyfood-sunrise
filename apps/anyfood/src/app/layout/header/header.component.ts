@@ -1,19 +1,31 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {NgOptimizedImage} from "@angular/common";
+import { AuthFacade } from '../../apps/auth/data-access/facades/auth.facade';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [
-    RouterLink,
-    NgOptimizedImage
-  ],
+  imports: [RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
+  private readonly authFacade = inject(AuthFacade);
+
+  readonly currentUser = this.authFacade.currentUser;
+  readonly $isMenuOpen = signal(false);
+
+  toggleMenu() {
+    this.$isMenuOpen.update((v) => !v);
+  }
+
+  logout() {
+    this.$isMenuOpen.set(false);
+    this.authFacade.logout();
+  }
+
   router = inject(Router);
 
   $rightRoutes = signal([
@@ -22,14 +34,14 @@ export class HeaderComponent {
       label: 'Рецепти',
     },
     {
-      path: "dish-list",
+      path: 'dish-list',
       label: 'Список страв',
     },
   ]);
 
   $leftRoutes = signal([
     {
-      path: 'food-cart',
+      path: 'product-list',
       label: 'Кошик продуктів',
     },
     {
@@ -40,5 +52,5 @@ export class HeaderComponent {
       path: 'account',
       label: 'Акаунт',
     },
-  ])
+  ]);
 }

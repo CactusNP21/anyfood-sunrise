@@ -1,0 +1,108 @@
+<header class="bg-white border-b border-gray-100">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a routerLink="/" class="flex items-center gap-2.5 no-underline">
+      <span class="text-2xl">🍽</span>
+      <span class="text-xl font-bold text-gray-900 font-serif tracking-tight">AnyFood</span>
+    </a>
+
+    <!-- Nav -->
+    <nav class="hidden md:flex items-center gap-1">
+      <a
+        routerLink="/categories"
+        routerLinkActive="text-orange-500 bg-orange-50"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+      >
+        Категорії
+      </a>
+
+      <a
+        routerLink="/recipes"
+        routerLinkActive="text-orange-500 bg-orange-50"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+      >
+        Рецепти
+      </a>
+      <a
+        routerLink="/meal-plan"
+        routerLinkActive="text-orange-500 bg-orange-50"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+      >
+        Меню тижня
+      </a>
+      <a
+        routerLink="/shopping-list"
+        routerLinkActive="text-orange-500 bg-orange-50"
+        class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+      >
+        Список покупок
+      </a>
+    </nav>
+
+    <!-- User menu -->
+    @if (currentUser(); as user) {
+      <div class="relative">
+        <button
+          (click)="toggleMenu()"
+          class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-gray-50 transition"
+        >
+          <!-- Avatar -->
+          <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+            <span class="text-sm font-bold text-orange-500 font-serif">
+              {{ user.name.charAt(0).toUpperCase() }}
+            </span>
+          </div>
+          <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ user.name }}</span>
+          <span class="text-xs text-gray-400">▾</span>
+        </button>
+
+        <!-- Dropdown -->
+        @if ($isMenuOpen()) {
+          <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+            <a
+              routerLink="/profile"
+              (click)="$isMenuOpen.set(false)"
+              class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition"
+            >
+              <span>👤</span>
+              <span>Профіль</span>
+            </a>
+            <div class="h-px bg-gray-100 my-1"></div>
+            <button
+              (click)="logout()"
+              class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition"
+            >
+              <span>🚪</span>
+              <span>Вийти</span>
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</header>
+
+
+<!--<div class="flex justify-between container px-3 py-4 text-slab border-b-black border-b-2">-->
+<!--  <div class="flex gap-8 items-center">-->
+<!--    @for (leftRoute of $leftRoutes(); track leftRoute) {-->
+<!--      <a [routerLink]="`/${leftRoute.path}`">-->
+<!--        {{leftRoute.label}}-->
+<!--      </a>-->
+<!--    }-->
+<!--  </div>-->
+
+<!--  <span>-->
+<!--    <img ngSrc="/anyfood/apps/anyfood/public/anyfood.svg" height="74" width="156" alt="logo">-->
+<!--  </span>-->
+
+<!--  <div class="flex gap-8 items-center">-->
+<!--    @for (leftRoute of $rightRoutes(); track leftRoute) {-->
+<!--      <a [routerLink]="`/${leftRoute.path}`">-->
+<!--        {{leftRoute.label}}-->
+<!--      </a>-->
+<!--    }-->
+<!--  </div>-->
+<!--</div>-->

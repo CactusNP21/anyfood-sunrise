@@ -7,6 +7,16 @@ export const appRoutes: Route[] = [
     redirectTo: 'home',
   },
   {
+    path: 'auth',
+    loadChildren: () =>
+      import('./apps/auth/auth.routes').then((m) => m.AUTH_ROUTES),
+  },
+  {
+    path: 'profile',
+    loadChildren: () =>
+      import('./apps/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
+  },
+  {
     path: 'home',
     loadComponent: () =>
       import('./apps/home/home.component').then((c) => c.HomeComponent),
@@ -14,8 +24,8 @@ export const appRoutes: Route[] = [
   {
     path: 'create-product',
     loadComponent: () =>
-      import('./apps/products/create-product/create-product.component').then(
-        (c) => c.CreateProductComponent
+      import('./apps/products/product-constructor/product-constructor.component').then(
+        (c) => c.ProductConstructorComponent
       ),
   },
   {
@@ -35,8 +45,8 @@ export const appRoutes: Route[] = [
   {
     path: 'product-list',
     loadComponent: () =>
-      import('./apps/dish-list/dish-list.component').then(
-        (c) => c.DishListComponent
+      import('./apps/products/product-list/product-list.component').then(
+        (c) => c.ProductListComponent
       ),
   },
 ];
