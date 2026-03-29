@@ -94,7 +94,7 @@ export class AuthService {
     this.storage.set(USER_KEY, JSON.stringify(res.user));
     this.$currentUser.set(res.user);
     this.loading.stop(AUTH_LOADING_KEYS.login);
-    this.router.navigate(['/recipes']);
+    this.router.navigate(['/home']);
   }
 
   private loadUserFromStorage(): IUser | null {

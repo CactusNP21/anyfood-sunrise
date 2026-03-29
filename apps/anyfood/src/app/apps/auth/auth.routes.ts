@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { CategoryClient } from '../../core/clients/category/category.client';
 
-const f = CategoryClient;
-
 export const AUTH_ROUTES: Routes = [
   {
     path: '',

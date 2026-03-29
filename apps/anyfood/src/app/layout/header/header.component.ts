@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
-import {Router, RouterLink} from "@angular/router";
+import {Router, RouterLink, RouterLinkActive } from "@angular/router";
 import {NgOptimizedImage} from "@angular/common";
 import { AuthFacade } from '../../apps/auth/data-access/facades/auth.facade';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

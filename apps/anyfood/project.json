@@ -12,7 +12,6 @@
       "options": {
         "outputPath": "dist/apps/anyfood",
         "browser": "apps/anyfood/src/main.ts",
-        "polyfills": ["zone.js"],
         "tsConfig": "apps/anyfood/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [

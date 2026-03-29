@@ -12,6 +12,11 @@ export const appRoutes: Route[] = [
       import('./apps/auth/auth.routes').then((m) => m.AUTH_ROUTES),
   },
   {
+    path: 'categories',
+    loadChildren: () =>
+      import('./apps/categories/categories.routes').then((m) => m.CATEGORIES_ROUTES),
+  },
+  {
     path: 'profile',
     loadChildren: () =>
       import('./apps/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
@@ -24,29 +29,29 @@ export const appRoutes: Route[] = [
   {
     path: 'create-product',
     loadComponent: () =>
-      import('./apps/products/product-constructor/product-constructor.component').then(
-        (c) => c.ProductConstructorComponent
-      ),
+      import(
+        './apps/products/product-constructor/product-constructor.component'
+      ).then((c) => c.ProductConstructorComponent),
   },
   {
     path: 'dish-constructor',
     loadComponent: () =>
       import('./apps/dish-constructor/view/dish-constructor.component').then(
-        (c) => c.DishConstructorComponent
+        (c) => c.DishConstructorComponent,
       ),
   },
   {
     path: 'dish-list',
     loadComponent: () =>
       import('./apps/dish-list/dish-list.component').then(
-        (c) => c.DishListComponent
+        (c) => c.DishListComponent,
       ),
   },
   {
     path: 'product-list',
     loadComponent: () =>
       import('./apps/products/product-list/product-list.component').then(
-        (c) => c.ProductListComponent
+        (c) => c.ProductListComponent,
       ),
   },
 ];

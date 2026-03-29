@@ -174,7 +174,7 @@ export class ProductConstructorComponent implements OnInit, OnDestroy {
 
   toggleIsSystem(): void {
     const ctrl = this.createProductForm.isSystem();
-    ctrl?.setControlValue(!ctrl.value());
+    // ctrl?.setControlValue(!ctrl.value());
   }
 
   isInvalid(field: keyof ICreateProductRequest): boolean {
@@ -201,17 +201,17 @@ export class ProductConstructorComponent implements OnInit, OnDestroy {
   }
 
   private patchForm(p: IProduct): void {
-    this.createProductForm().setControlValue({
-      name: p.name,
-      categoryId: p.categoryId.toString(),
-      calories: p.calories.toString(),
-      protein: p.protein.toString(),
-      fat: p.fat.toString(),
-      carbs: p.carbs.toString(),
-      glycemicIndex: p.glycemicIndex.toString(),
-      imageUrl: p.imageUrl,
-      price: p.price.toString(),
-      isSystem: p.isSystem,
-    });
+    // this.createProductForm().setControlValue({
+    //   name: p.name,
+    //   categoryId: p.categoryId.toString(),
+    //   calories: p.calories.toString(),
+    //   protein: p.protein.toString(),
+    //   fat: p.fat.toString(),
+    //   carbs: p.carbs.toString(),
+    //   glycemicIndex: p.glycemicIndex.toString(),
+    //   imageUrl: p.imageUrl,
+    //   price: p.price.toString(),
+    //   isSystem: p.isSystem,
+    // });
   }
 }

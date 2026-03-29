@@ -1,22 +1,22 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthFacade } from '../../../data-access/facades/auth.facade';
 import { LoadingService } from '../../../../../core/services/loading.service';
 import { AUTH_LOADING_KEYS } from '../../../constants/auth-loading-keys.constant';
 import { ILoginRequest } from '../../../models/login-request.model';
-import { form, FormField, required } from '@angular/forms/signals';
+import { form, FormField, minLength, required } from '@angular/forms/signals';
+import { AnyfoodInputComponent } from '@anyfood/ui';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, FormField],
+  imports: [RouterLink, FormField, AnyfoodInputComponent],
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit {
-  private readonly fb = inject(FormBuilder);
   private readonly facade = inject(AuthFacade);
   private readonly loading = inject(LoadingService);
+  private readonly router = inject(Router);
 
   readonly $showPassword = signal(false);
   readonly $submitted = signal(false);
@@ -31,15 +31,17 @@ export class LoginComponent implements OnInit {
 
   readonly form = form(this.$loginFormModel, (form) => {
     required(form.username);
+    minLength(form.username, 2)
     required(form.password);
   });
 
   ngOnInit() {
-    this.facade.clearError();
+    // this.facade.clearError();
+    // console.login(this.form.username());
   }
 
   onSubmit() {
-    this.$submitted.set(true);
+    this.form.username().markAsTouched();
     const formState = this.form();
     if (formState.invalid()) return;
 

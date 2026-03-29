@@ -1,4 +1,19 @@
 <div class="flex flex-col">
-  <anyfood-label [controlId]="''" [text]="$label()"/>
-  <input [value]="value()" (change)="value.set(inputElement.value)" #inputElement class="border rounded-2xl p-2" [placeholder]="$placeholder()">
+  <anyfood-label [controlId]="$id()" [text]="$label()" />
+  <input
+    [id]="$id()"
+    [type]="$type()"
+    [autocomplete]="$autocomplete()"
+    [value]="value()"
+    (change)="value.set(inputElement.value)"
+    (blur)="touched.set(true)"
+    #inputElement
+    class="border rounded-2xl p-2"
+    [placeholder]="$placeholder()"
+  />
+  @if (invalid() && touched()) {
+    @for (userError of this.errors(); track userError.kind) {
+      <p class="text-xs text-red-500">{{ userError.kind }}</p>
+    }
+  }
 </div>
