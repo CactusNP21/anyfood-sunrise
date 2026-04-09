@@ -1,23 +1,25 @@
 import nx from '@nx/eslint-plugin';
 import { resolve } from 'node:path';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/vite.config.*.timestamp*', '**/vitest.config.*.timestamp*'],
-  },
-  {
-    // Apply to all packages
-    // files: ["apps/*/src/**/*.ts"],
-    // settings: {
-    //   "boundaries/root-path": resolve(import.meta.dirname),
-    // }
+    ignores: [
+      '**/dist',
+      '**/vite.config.*.timestamp*',
+      '**/vitest.config.*.timestamp*',
+    ],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    plugins: {
+      'unused-imports': unusedImports,
+    },
     rules: {
+      'unused-imports/no-unused-imports': 'error',
       '@nx/enforce-module-boundaries': [
         'error',
         {
@@ -45,6 +47,8 @@ export default [
       '**/*.mjs',
     ],
     // Override or add rules here
-    rules: {},
+    rules: {
+      '@angular-eslint/no-input-rename': 'off',
+    },
   },
 ];

@@ -7,26 +7,34 @@ export const PRODUCT_ROUTES: Routes = [
       {
         path: 'list',
         loadComponent: () =>
-          import(
-            './features/categories-list/view/categories-list.component'
-          ).then((m) => m.CategoriesListComponent),
-        title: 'Категорії',
+          import('./features/product-list/product-list').then(
+            (m) => m.ProductList,
+          ),
+        title: 'Продукти',
       },
       {
         path: 'create',
         loadComponent: () =>
-          import(
-            './features/categories-editor/view/categories-editor.component'
-          ).then((m) => m.CategoriesEditorComponent),
-        title: 'Категорії',
+          import('./features/product-editor/product-editor.component').then(
+            (m) => m.ProductEditorComponent,
+          ),
+        title: 'Створення продукту',
       },
+      // {
+      //   path: 'create',
+      //   loadComponent: () =>
+      //     import(
+      //       './features/categories-editor/view/categories-editor.component'
+      //     ).then((m) => m.CategoriesEditorComponent),
+      //   title: 'Категорії',
+      // },
       {
         path: 'details/:id',
         loadComponent: () =>
           import(
-            './features/category-detail/view/category-detail.component'
-          ).then((m) => m.CategoryDetailComponent),
-        title: 'Категорії',
+            './features/product-details/product-details.component'
+          ).then((m) => m.ProductDetailsComponent),
+        title: 'Products',
       },
       {
         path: '',

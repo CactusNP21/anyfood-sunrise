@@ -2,12 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component, effect,
   inject,
-  linkedSignal,
-  signal,
+  signal, OnInit,
 } from '@angular/core';
 import { CategoryClient } from '../../../../../core/clients/category/category.client';
 import { ActivatedRoute } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
 import { ICategoryResponse } from '../../../../../core/clients/category/models/category-client.model';
 
 @Component({
@@ -17,7 +15,7 @@ import { ICategoryResponse } from '../../../../../core/clients/category/models/c
   styleUrl: './category-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CategoryDetailComponent {
+export class CategoryDetailComponent implements OnInit {
   client = inject(CategoryClient);
   activatedRoute = inject(ActivatedRoute);
 

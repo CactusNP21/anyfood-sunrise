@@ -6,11 +6,12 @@ import {
   IUpdateProductRequest,
 } from './models/product-client.model';
 import { IProduct } from '../../entities/product/product.entity';
+import { environment } from '../../../../enviroments/enviroments';
 
 @Injectable({ providedIn: 'root' })
 export class ProductClient {
   private readonly http = inject(HttpClient);
-  private readonly base = '/api/products';
+  private readonly base = `${environment.apiUrl}/products`;
 
   getById(id: number): Observable<IProduct> {
     return this.http.get<IProduct>(`${this.base}/${id}`);
@@ -18,6 +19,10 @@ export class ProductClient {
 
   getSystemProducts(): Observable<IProduct[]> {
     return this.http.get<IProduct[]>(`${this.base}/system`);
+  }
+
+  getAll(): Observable<IProduct[]> {
+    return this.http.get<IProduct[]>(`${this.base}`);
   }
 
   getMyProducts(): Observable<IProduct[]> {

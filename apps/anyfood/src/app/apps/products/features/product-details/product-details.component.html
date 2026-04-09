@@ -1,0 +1,14 @@
+@let product = $productDetails();
+
+@if (product) {
+  <div>
+    <img [ngSrc]="product.imageUrl" width="128" height="128" alt="" />
+    <p>{{ product.name }}</p>
+    <p>{{ product.price }}</p>
+    <p>Protein: {{ product.protein }}</p>
+    <p>Fat: {{ product.fat }}</p>
+    <p>Carbs: {{ product.carbs }}</p>
+    <p>Calories: {{ product.calories }}</p>
+    <p>Price: {{ product.calories }}§</p>
+  </div>
+}

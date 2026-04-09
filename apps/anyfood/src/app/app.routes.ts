@@ -1,4 +1,4 @@
-import {Route} from '@angular/router';
+import { Route } from '@angular/router';
 
 export const appRoutes: Route[] = [
   {
@@ -14,7 +14,14 @@ export const appRoutes: Route[] = [
   {
     path: 'categories',
     loadChildren: () =>
-      import('./apps/categories/categories.routes').then((m) => m.CATEGORIES_ROUTES),
+      import('./apps/categories/categories.routes').then(
+        (m) => m.CATEGORIES_ROUTES,
+      ),
+  },
+  {
+    path: 'products',
+    loadChildren: () =>
+      import('./apps/products/products.routes').then((m) => m.PRODUCT_ROUTES),
   },
   {
     path: 'profile',
@@ -27,31 +34,10 @@ export const appRoutes: Route[] = [
       import('./apps/home/home.component').then((c) => c.HomeComponent),
   },
   {
-    path: 'create-product',
-    loadComponent: () =>
-      import(
-        './apps/products/product-constructor/product-constructor.component'
-      ).then((c) => c.ProductConstructorComponent),
-  },
-  {
-    path: 'dish-constructor',
-    loadComponent: () =>
-      import('./apps/dish-constructor/view/dish-constructor.component').then(
-        (c) => c.DishConstructorComponent,
-      ),
-  },
-  {
     path: 'dish-list',
     loadComponent: () =>
       import('./apps/dish-list/dish-list.component').then(
         (c) => c.DishListComponent,
-      ),
-  },
-  {
-    path: 'product-list',
-    loadComponent: () =>
-      import('./apps/products/product-list/product-list.component').then(
-        (c) => c.ProductListComponent,
       ),
   },
 ];

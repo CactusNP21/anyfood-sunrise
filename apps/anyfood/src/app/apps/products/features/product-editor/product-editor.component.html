@@ -1,0 +1,53 @@
+<form class="flex flex-col gap-2">
+  <anyfood-input
+    inputID="productName"
+    [formField]="productForm.name"
+    [label]="'Name'"
+  />
+  <anyfood-selection
+    inputID="productCategoryId"
+    [formField]="productForm.categoryId"
+    [label]="'Product category'"
+    [options]="$categories()"
+    [primaryKey]="'id'"
+    [valueKey]="'id'"
+    [displayKey]="'name'"
+  />
+  <anyfood-input
+    inputID="calories"
+    type="number"
+    [formField]="productForm.calories"
+    [label]="'Calories'"
+  />
+  <anyfood-input
+    inputID="carbs"
+    [formField]="productForm.carbs"
+    [label]="'Carbs'"
+  />
+  <anyfood-input
+    inputID="protein"
+    [formField]="productForm.fat"
+    [label]="'Fat'"
+  />
+  <anyfood-input
+    inputID="fat"
+    [formField]="productForm.protein"
+    [label]="'Protein'"
+  />
+  <anyfood-input
+    inputID="glycemicIndex"
+    [formField]="productForm.glycemicIndex"
+    [label]="'Glycemic index'"
+  />
+  <anyfood-input
+    inputID="price"
+    [formField]="productForm.price"
+    [label]="'Price'"
+  />
+  <anyfood-input
+    inputID="imageUrl"
+    [formField]="productForm.imageUrl"
+    [label]="'Image URL'"
+  />
+  <button [disabled]="!productForm().valid()" type="button" (click)="createProduct()">Create product</button>
+</form>

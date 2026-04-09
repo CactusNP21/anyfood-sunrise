@@ -1,19 +1,12 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   computed,
-  ElementRef,
-  inject,
   input,
-  InputSignal,
-  linkedSignal,
   model,
-  Renderer2,
-  resource,
-  runInInjectionContext,
+  ModelSignal,
   signal,
-  TemplateRef,
-  viewChild,
-  ViewContainerRef,
+  WritableSignal,
 } from '@angular/core';
 import { AnyfoodLabelComponent } from '../label/anyfood-label.component';
 import { form, FormField, FormValueControl } from '@angular/forms/signals';
@@ -23,6 +16,10 @@ import {
   ConnectedPosition,
 } from '@angular/cdk/overlay';
 import { NgOptimizedImage } from '@angular/common';
+
+function isObject(val: unknown): val is object {
+  return typeof val === 'object' && val !== null;
+}
 
 @Component({
   selector: 'anyfood-selection',
@@ -35,114 +32,139 @@ import { NgOptimizedImage } from '@angular/common';
   ],
   templateUrl: './anyfood-selection.component.html',
   styleUrl: './anyfood-selection.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AnyfoodSelectionComponent<T extends {}>
-  implements FormValueControl<T[]>
+export class AnyfoodSelectionComponent<
+  TOption,
+  TValue extends TOption[keyof TOption] | TOption,
+  TValueKey extends
+    {
+        [K in keyof TOption]: TOption[K] extends TValue ? K : never;
+      }[keyof TOption]
+    ,
+> implements FormValueControl<TValue | TValue[] | undefined>
 {
-  $isOverlayOpen = signal(false);
+  value = model<TValue | TValue[] | undefined>();
 
-  value = model<T[]>([]);
-  $options = model<T[]>([], { alias: 'options' });
-
-  $label = input.required({ alias: 'label' });
+  $options = model.required<TOption[]>({ alias: 'options' });
+  $label = input.required<string>({ alias: 'label' });
   $placeholder = input('Введіть значення', { alias: 'placeholder' });
-  $primaryKey = input.required<keyof T>({ alias: 'primaryKey' });
-  $displayKey = input.required<keyof T>({ alias: 'displayKey' });
-
-  $imgKey = input.required<
-    keyof {
-      [K in keyof T]: T[K] extends string ? T[K] : never;
-    }
-  >({ alias: 'imgKey' });
+  $primaryKey = input<keyof TOption>(undefined, {
+    alias: 'primaryKey',
+  });
+  $valueKey = input<TValueKey>(undefined, { alias: 'valueKey' });
+  $displayKey = input<keyof TOption | undefined>(undefined, {
+    alias: 'displayKey',
+  });
+  $id = input.required<string>({ alias: 'inputID' });
+  $imgKey = input<keyof TOption | undefined>(undefined, { alias: 'imgKey' });
 
   $valueMap = computed(() => {
     const value = this.value();
-    const map = new Map<any, T>();
-    value.forEach((item) => {
-      map.set(item[this.$primaryKey()] as string, item);
-    });
+    const primaryKey = this.$primaryKey();
+    const valueKey = this.$valueKey();
+    const map = new Map<unknown, TOption>();
+
+    const extractKey = (item: unknown): unknown => {
+      if (primaryKey && isObject(item)) {
+        return (item as Record<keyof TOption, unknown>)[
+          primaryKey as keyof TOption
+        ];
+      }
+      return item;
+    };
+
+    const values = Array.isArray(value) ? value : [value];
+
+    for (const item of values) {
+      // якщо є valueKey — item це примітив витягнутий з об'єкта,
+      // тому ключем є сам item, інакше — витягуємо через primaryKey
+      const key = valueKey !== undefined ? item : extractKey(item);
+      map.set(key, item as unknown as TOption);
+    }
+
     return map;
   });
 
-  getImg(option: T): string {
-    const imgKey = this.$imgKey();
-
-    return (option[imgKey as keyof T] as string) || 'empty';
-  }
-
-  $serverSearchFn = input<((input: string) => Promise<T[]>) | null>(null, {
-    alias: 'serverSearchFn',
-  });
-
   $input = form(signal(''));
+  $isOverlayOpen = signal(false);
 
-  optionsResource = resource({
-    params: () => ({ input: this.$input().value() }),
-    stream: async (param) => {
-      const ssf = this.$serverSearchFn();
-      return signal({ value: await ssf!(param.params.input) });
-    },
-  });
+  // --- Core helpers ---
 
-  $optionsList = linkedSignal<T[] | undefined, T[]>({
-    source: this.optionsResource.value,
-    computation: (newOptions, previous) => {
-      let result = [];
-      if (newOptions === undefined) result = previous?.value ?? [];
-      else result = newOptions;
-      return result;
-    },
-  });
-
-  private filterOptions(input: string) {
-    const displayKey = this.$displayKey();
-    const options = this.$options();
-
-    const filteredOptions = options.filter((opt) => {
-      const val = opt[displayKey] as string;
-      return val.includes(input);
-    });
-
-    return new Promise<T[]>(() => filteredOptions);
+  private extractValue(option: TOption): TValue {
+    const valueKey = this.$valueKey();
+    if (valueKey !== undefined) {
+      return option[valueKey as keyof TOption] as unknown as TValue;
+    }
+    return option as unknown as TValue;
   }
 
-  openOverlay() {
+  private valuesEqual(a: TValue, b: TValue): boolean {
+    const primaryKey = this.$primaryKey();
+    if (primaryKey && isObject(a) && isObject(b)) {
+      return (
+        (a as Record<keyof TOption, unknown>)[primaryKey as keyof TOption] ===
+        (b as Record<keyof TOption, unknown>)[primaryKey as keyof TOption]
+      );
+    }
+    return a === b;
+  }
+
+  isSelected(option: TOption): boolean {
+    const value = this.value();
+    const extracted = this.extractValue(option);
+
+    if (Array.isArray(value)) {
+      return value.some((v) => this.valuesEqual(v as TValue, extracted));
+    }
+    return this.valuesEqual(value as TValue, extracted);
+  }
+
+  // --- Actions ---
+
+  toggleOption(option: TOption): void {
+    const extracted = this.extractValue(option);
+    const isAlreadySelected = this.isSelected(option);
+
+    if (Array.isArray(this.value())) {
+      (this.value as ModelSignal<TValue[]>).update((current) =>
+        isAlreadySelected
+          ? current.filter((v) => !this.valuesEqual(v as TValue, extracted))
+          : [...current, extracted],
+      );
+      return;
+    }
+
+    (this.value as ModelSignal<TValue>).set(extracted);
+  }
+
+  // --- Display helpers ---
+
+  getDisplay(option: TOption): string {
+    const displayKey = this.$displayKey();
+    return displayKey ? String(option[displayKey]) : String(option);
+  }
+
+  getImg(option: TOption): string {
+    const imgKey = this.$imgKey();
+    return imgKey ? (option[imgKey] as unknown as string) || 'empty' : '';
+  }
+
+  // --- Overlay ---
+
+  openOverlay(): void {
     this.$isOverlayOpen.set(true);
   }
 
-  closeOverlay() {
+  closeOverlay(): void {
     if (this.$isOverlayOpen()) {
       this.$isOverlayOpen.set(false);
     }
   }
 
-  toggleOption(option: T) {
-    const primaryKey = this.$primaryKey();
-    const map = this.$valueMap();
-
-    if (map.has(option[primaryKey])) {
-      this.value.update((current) =>
-        current.filter((value) => value[primaryKey] !== option[primaryKey])
-      );
-      return;
-    }
-
-    this.value.update((currentValue) => [...currentValue, option]);
-  }
-
   positions: ConnectedPosition[] = [
-    {
-      originX: 'start',
-      originY: 'bottom',
-      overlayX: 'start',
-      overlayY: 'top',
-    },
-    {
-      originX: 'end',
-      originY: 'bottom',
-      overlayX: 'end',
-      overlayY: 'top',
-    },
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
     {
       originX: 'start',
       originY: 'top',
@@ -158,5 +180,4 @@ export class AnyfoodSelectionComponent<T extends {}>
       panelClass: 'mat-mdc-select-panel-above',
     },
   ];
-  protected readonly close = close;
 }

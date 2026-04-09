@@ -1,7 +1,7 @@
 export interface IProduct {
   id: number;
   name: string;
-  calories: number;
+  calories: number | null;
   protein: number;
   fat: number;
   carbs: number;
@@ -10,7 +10,5 @@ export interface IProduct {
   price: number;
   isSystem: boolean;
   categoryId: number;
-  categoryName: string;
-  userId: string;
 }
 

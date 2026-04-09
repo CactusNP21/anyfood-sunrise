@@ -1,5 +1,6 @@
 import nx from '@nx/eslint-plugin';
 import baseConfig from '../eslint.config.mjs';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default [
   ...baseConfig,
@@ -7,6 +8,9 @@ export default [
   ...nx.configs['flat/angular-template'],
   {
     files: ['**/*.ts'],
+    plugins: {
+      'unused-imports': unusedImports,
+    },
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -20,10 +24,12 @@ export default [
         'error',
         {
           type: 'element',
-          prefix: 'lib',
+          prefix: 'anyfood',
           style: 'kebab-case',
         },
       ],
+      '@angular-eslint/no-input-rename': 'off',
+      'unused-imports/no-unused-imports': 'error',
     },
   },
   {

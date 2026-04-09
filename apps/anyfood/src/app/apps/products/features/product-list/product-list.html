@@ -1,0 +1,10 @@
+<div>
+  <button routerLink="../create">Add product</button>
+  <div class="grid grid-cols-2">
+    @for (category of $categories(); track category.id) {
+      <div [routerLink]="`../details/${category.id}`" class="p-3 border border-black">
+        {{ category.name }}
+      </div>
+    }
+  </div>
+</div>

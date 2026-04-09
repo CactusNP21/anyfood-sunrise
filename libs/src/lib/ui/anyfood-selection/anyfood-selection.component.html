@@ -1,12 +1,17 @@
 <div
-  class="flex flex-col w-full" (click)="openOverlay()"
+  class="flex flex-col w-full"
+  (click)="openOverlay()"
   cdkOverlayOrigin
-  #trigger='cdkOverlayOrigin'
+  #trigger="cdkOverlayOrigin"
 >
-  <anyfood-label [controlId]="''" [text]="$label()"/>
+  <anyfood-label [controlId]="$id()" [text]="$label()" />
   <div class="flex gap-2 flex-1">
     <input
-      [formField]="$input" class="border rounded-2xl p-2 flex-1" [placeholder]="$placeholder()">
+      [id]="$id()"
+      [formField]="$input"
+      class="border rounded-2xl p-2 flex-1"
+      [placeholder]="$placeholder()"
+    />
     <span>dropdown_icon</span>
   </div>
 </div>
@@ -26,17 +31,33 @@
 >
   <div class="bg-amber-300 w-full option-text overflow-auto max-h-96">
     @let displayKey = $displayKey();
-      @for (opt of optionsResource.value(); track opt[$primaryKey()]) {
-        <div class=" w-full border-t bg-[#F4F7FF] p-2 flex gap-3 items-center"
-             [class.bg-blue-500]="$valueMap().has(opt[$primaryKey()])"
-             (click)="toggleOption(opt)">
+    @let primaryKey = $primaryKey();
+    @for (opt of $options(); track opt) {
+      <div
+        class="w-full border-t bg-[#F4F7FF] p-2 flex gap-3 items-center"
+        [class.bg-blue-500]="
+          $valueMap().has(primaryKey ? opt[primaryKey] : opt!)
+        "
+        (click)="toggleOption(opt)"
+      >
+        @if ($imgKey()) {
           <span class="w-8 h-8">
-            <img class="border border-[#000476] rounded h-full w-full" [decoding]="'async'" [ngSrc]="getImg(opt)" width="32" height="32" alt="product photo">
+            <img
+              class="border border-[#000476] rounded h-full w-full"
+              [decoding]="'async'"
+              [ngSrc]="getImg(opt)"
+              width="32"
+              height="32"
+              alt="product photo"
+            />
           </span>
+        }
+        @if (displayKey) {
           <span>
-          {{ opt[displayKey] }}
+            {{ opt[displayKey] }}
           </span>
-        </div>
-      }
+        }
+      </div>
+    }
   </div>
 </ng-template>
