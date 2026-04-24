@@ -24,6 +24,11 @@ export const appRoutes: Route[] = [
       import('./apps/products/products.routes').then((m) => m.PRODUCT_ROUTES),
   },
   {
+    path: 'recipes',
+    loadChildren: () =>
+      import('./apps/recipe/recipe.routes').then((m) => m.RECIPE_ROUTES),
+  },
+  {
     path: 'profile',
     loadChildren: () =>
       import('./apps/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
@@ -32,12 +37,5 @@ export const appRoutes: Route[] = [
     path: 'home',
     loadComponent: () =>
       import('./apps/home/home.component').then((c) => c.HomeComponent),
-  },
-  {
-    path: 'dish-list',
-    loadComponent: () =>
-      import('./apps/dish-list/dish-list.component').then(
-        (c) => c.DishListComponent,
-      ),
   },
 ];

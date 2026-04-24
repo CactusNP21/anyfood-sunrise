@@ -1,7 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
+  OnInit,
   Signal,
   signal,
 } from '@angular/core';
@@ -19,13 +21,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, Observable, of } from 'rxjs';
 
 @Component({
-  selector: 'app-product-editor.component',
+  selector: 'app-product-editor',
   imports: [AnyfoodInputComponent, FormField, AnyfoodSelectionComponent],
   templateUrl: './product-editor.component.html',
   styleUrl: './product-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductEditorComponent {
+export class ProductEditorComponent implements OnInit {
   categoryClient = inject(CategoryClient);
   productClient = inject(ProductClient);
   activatedRoute = inject(ActivatedRoute);
@@ -44,8 +46,28 @@ export class ProductEditorComponent {
   });
 
   $categories = toSignal(this.categoryClient.getAll(), {
-    initialValue: [] as ICategoryResponse[]
+    initialValue: [] as ICategoryResponse[],
   });
+
+  $id = signal<string | null>(null);
+  $hasId = computed(() => {
+    const id = this.$id();
+    return Boolean(id && !isNaN(+id));
+  });
+
+  ngOnInit() {
+    const id = this.activatedRoute.snapshot.paramMap.get('id');
+    if (!this.idExists(id)) return;
+
+    this.$id.set(id);
+    this.productClient.getById(id).subscribe((product) => {
+      this.$productFormModel.set(product);
+    });
+  }
+
+  private idExists(id: unknown): id is string {
+    return typeof id === 'string' && !!id;
+  }
 
   productForm = form(this.$productFormModel, (path) => {
     required(path.categoryId);
@@ -56,6 +78,18 @@ export class ProductEditorComponent {
   createProduct() {
     const formValue = this.productForm().value();
     this.productClient.create(formValue).subscribe((response) => {
+      this.router.navigate(['../details', response.id], {
+        relativeTo: this.activatedRoute,
+      });
+    });
+  }
+
+  editProduct() {
+    const id = this.activatedRoute.snapshot.paramMap.get('id');
+    if (!this.idExists(id)) return;
+
+    const formValue = this.productForm().value();
+    this.productClient.update(id, formValue).subscribe((response) => {
       this.router.navigate(['../details', response.id], {
         relativeTo: this.activatedRoute,
       });

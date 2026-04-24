@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import {HeaderComponent} from "./layout/header/header.component";
+import { ButtonDirective } from './shared/directives/button.directive';
 
 @Component({
   imports: [RouterModule, HeaderComponent],

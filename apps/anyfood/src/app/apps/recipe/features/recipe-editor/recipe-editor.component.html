@@ -1,0 +1,26 @@
+<form class="flex flex-col gap-2">
+  <anyfood-input [formField]="recipeForm.name" [inputID]="'recipeName'" [label]="'Name'"/>
+  <anyfood-selection [options]="$products()"
+                     [primaryKey]="'id'"
+                     [displayKey]="'name'"
+                     [imgKey]="'imageUrl'"
+                     [formField]="selectedProducts" [inputID]="'recipeIngredients'" [label]="'Products'"/>
+  <div class="flex gap-5 flex-wrap">
+    @for (product of selectedProducts().value(); track product.id; let index = $index) {
+      <div class="flex gap-2 flex-col justify-between">
+        <img width="120" height="120" [ngSrc]="product.imageUrl" alt="title image" />
+        <span>{{product.name}}</span>
+        <anyfood-input type="number" label="Вага" [inputID]="'wight' + product.id" [formField]="recipeForm.recipeProducts[index].weight"/>
+        <button type="button">X</button>
+      </div>
+    }
+  </div>
+  <anyfood-input [formField]="recipeForm.description" [inputID]="'recipeDescription'" [label]="'Description'"/>
+  <anyfood-input [formField]="recipeForm.imageUrl" [inputID]="'recipeImage'" [label]="'Image'"/>
+
+  <anyfood-input [formField]="recipeForm.duration" [inputID]="'recipeDuration'" [label]="'Duration'"/>
+  <anyfood-input [formField]="recipeForm.portions" [inputID]="'recipePortions'" [label]="'Portions'"/>
+
+
+  <button type="button" (click)="createRecipe()">Створити рецепт</button>
+</form>

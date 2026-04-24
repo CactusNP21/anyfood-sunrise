@@ -20,20 +20,20 @@ export const PRODUCT_ROUTES: Routes = [
           ),
         title: 'Створення продукту',
       },
-      // {
-      //   path: 'create',
-      //   loadComponent: () =>
-      //     import(
-      //       './features/categories-editor/view/categories-editor.component'
-      //     ).then((m) => m.CategoriesEditorComponent),
-      //   title: 'Категорії',
-      // },
+      {
+        path: 'edit/:id',
+        loadComponent: () =>
+          import('./features/product-editor/product-editor.component').then(
+            (m) => m.ProductEditorComponent,
+          ),
+        title: 'Редагування продукту',
+      },
       {
         path: 'details/:id',
         loadComponent: () =>
-          import(
-            './features/product-details/product-details.component'
-          ).then((m) => m.ProductDetailsComponent),
+          import('./features/product-details/product-details.component').then(
+            (m) => m.ProductDetailsComponent,
+          ),
         title: 'Products',
       },
       {

@@ -1,0 +1,10 @@
+<button routerLink="../create">Create recipe</button>
+
+<div class="grid grid-cols-2 w-full gap-4">
+  @for (recipe of $recipes(); track recipe.id) {
+    <div routerLink="../details/{{recipe.id}}" class="p-3 border border-black">
+      {{recipe.name}}
+    </div>
+  }
+</div>
+

@@ -24,4 +24,14 @@ export class AnyfoodInputComponent implements FormValueControl<string | number |
   $autocomplete = input('off', { alias: 'autocomplete' });
   $type = input('text', { alias: 'type' });
   $id = input.required({ alias: 'inputID' });
+
+
+  valueChange(inputElement: HTMLInputElement) {
+    const type = this.$type();
+    if (type === 'number') {
+      this.value.set(inputElement.valueAsNumber)
+      return;
+    }
+    this.value.set(inputElement.value);
+  }
 }

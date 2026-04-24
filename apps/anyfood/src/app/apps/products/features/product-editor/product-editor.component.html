@@ -49,5 +49,24 @@
     [formField]="productForm.imageUrl"
     [label]="'Image URL'"
   />
-  <button [disabled]="!productForm().valid()" type="button" (click)="createProduct()">Create product</button>
+  @switch ($hasId()) {
+    @case (true) {
+      <button
+        [disabled]="!productForm().valid()"
+        type="button"
+        (click)="editProduct()"
+      >
+        Edit product
+      </button>
+    }
+    @default {
+      <button
+        [disabled]="!productForm().valid()"
+        type="button"
+        (click)="createProduct()"
+      >
+        Create product
+      </button>
+    }
+  }
 </form>

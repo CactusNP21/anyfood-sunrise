@@ -5,7 +5,7 @@
     [type]="$type()"
     [autocomplete]="$autocomplete()"
     [value]="value()"
-    (change)="value.set(inputElement.value)"
+    (change)="valueChange(inputElement)"
     (blur)="touched.set(true)"
     #inputElement
     class="border rounded-2xl p-2"

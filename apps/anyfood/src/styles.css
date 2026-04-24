@@ -1,5 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
+@import "./design-system/button.css";
+
+dialog {
+  margin: auto;
+}
+
+:root {
+  --color-primary:        #F97316;
+  --color-primary-hover:  #EA580C;
+  --color-primary-light:  #FED7AA;
+  --color-primary-subtle: #FFF7ED;
+
+  --color-surface:        #ffffff;
+  --color-surface-page:   #F5F5F4;
+
+  --color-text:           #1C1917;
+  --color-text-muted:     #78716C;
+  --color-text-subtle:    #A8A29E;
+
+  --color-border:         #FED7AA;
+  --color-border-strong:  #FB923C;
+
+  --color-success:        #16A34A;
+  --color-warning:        #D97706;
+  --color-danger:         #DC2626;
+  --color-info:           #2563EB;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #191212;
+    --color-primary-hover: #d8d8d8;
+    --color-text-primary: #ce9b46;
+    --color-text-secondary: #d31616;
+    --color-bg-primary: #111;
+    --color-bg-secondary: #1e1e1e;
+    --color-bg-tertiary: #2a2a2a;
+    --color-border: rgba(255, 255, 255, 0.1);
+  }
+}
 
 .text-slab {
   font-family: 'Roboto Slab', serif;

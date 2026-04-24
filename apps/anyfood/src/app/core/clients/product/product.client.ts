@@ -13,7 +13,7 @@ export class ProductClient {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/products`;
 
-  getById(id: number): Observable<IProduct> {
+  getById(id: string): Observable<IProduct> {
     return this.http.get<IProduct>(`${this.base}/${id}`);
   }
 
@@ -33,7 +33,7 @@ export class ProductClient {
     return this.http.post<IProduct>(this.base, body);
   }
 
-  update(id: number, body: IUpdateProductRequest): Observable<IProduct> {
+  update(id: string, body: IUpdateProductRequest): Observable<IProduct> {
     return this.http.put<IProduct>(`${this.base}/${id}`, body);
   }
 
