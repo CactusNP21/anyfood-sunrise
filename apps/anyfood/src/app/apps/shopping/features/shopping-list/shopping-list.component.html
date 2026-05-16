@@ -1,10 +1,143 @@
-@for (list of $shoppingList(); track list.id) {
-  <h3 class="text-lg">{{list.name || "Empty"}}</h3>
-  @for (product of list.items; track product.id) {
-    <div class="flex gap-4">
-      <anyfood-image [src]="product.imageUrl" [height]="64" [width]="64"/>
-      <p>{{product.productName}}</p>
-      <p>{{product.totalWeight}} g</p>
+<div class="min-h-screen bg-stone-50 p-6">
+  <div class="max-w-2xl mx-auto">
+    <!-- Page header -->
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1
+          class="text-2xl font-semibold text-gray-900 font-serif tracking-tight"
+        >
+          Список покупок
+        </h1>
+        <p class="text-sm text-gray-400 mt-0.5">
+          {{ $shoppingList().length }}
+          {{ $shoppingList().length === 1 ? 'список' : 'списки' }}
+        </p>
+      </div>
+      <button routerLink="../create" lg class="flex items-center gap-2">
+        <span>+</span>
+        <span>Створити</span>
+      </button>
     </div>
-  }
-}
+
+    @if ($shoppingList().length === 0) {
+      <!-- Empty state -->
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <span class="text-6xl mb-4">🛒</span>
+        <h2 class="text-xl font-semibold text-gray-700 font-serif mb-2">
+          Список покупок порожній
+        </h2>
+        <p class="text-sm text-gray-400 mb-6">
+          Згенеруйте список з вашого плану харчування
+        </p>
+        <button routerLink="../create" lg>Створити список</button>
+      </div>
+    }
+
+    <div class="flex flex-col gap-5">
+      @for (list of $shoppingList(); track list.id) {
+        <div
+          class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm"
+        >
+          <!-- List header -->
+          <div
+            class="flex items-center justify-between px-5 py-4 border-b border-orange-50"
+          >
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">
+                {{ list.name || 'Без назви' }}
+              </h2>
+              <p class="text-xs text-gray-400 mt-0.5">
+                {{ list.createdAt | date: 'd MMM yyyy' }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-lg font-semibold text-orange-500">
+                {{ list.totalPrice | number: '1.2-2' }} ₴
+              </p>
+              <p class="text-xs text-gray-400">загальна сума</p>
+            </div>
+          </div>
+
+          <!-- Items -->
+          <div class="divide-y divide-stone-50">
+            @for (item of list.items; track item.id; let last = $last) {
+              <div
+                class="flex items-center gap-4 px-5 py-3.5 transition-colors"
+                [class.opacity-50]="item.isPurchased"
+              >
+                <!-- Checkbox -->
+                <div
+                  class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center cursor-pointer transition-all"
+                  [class.border-orange-400]="item.isPurchased"
+                  [class.bg-orange-400]="item.isPurchased"
+                  [class.border-gray-200]="!item.isPurchased"
+                >
+                  @if (item.isPurchased) {
+                    <span class="text-white text-xs">✓</span>
+                  }
+                </div>
+
+                <!-- Image -->
+                <anyfood-image
+                  [src]="item.imageUrl"
+                  [width]="44"
+                  [height]="44"
+                  class="rounded-xl object-cover shrink-0"
+                />
+
+                <!-- Name + weight -->
+                <div class="flex-1 min-w-0">
+                  <p
+                    class="text-sm font-medium text-gray-900 truncate"
+                    [class.line-through]="item.isPurchased"
+                    [class.text-gray-400]="item.isPurchased"
+                  >
+                    {{ item.productName }}
+                  </p>
+                  <p class="text-xs text-gray-400 mt-0.5">
+                    {{ item.totalWeight | number: '1.0-1' }} г
+                    @if (item.pricePerKg) {
+                      · {{ item.pricePerKg | number: '1.2-2' }} ₴/кг
+                    }
+                  </p>
+                </div>
+
+                <!-- Item total price -->
+                <div class="text-right flex-shrink-0">
+                  <p class="text-sm font-semibold text-gray-800">
+                    {{ item.totalPrice | number: '1.2-2' }} ₴
+                  </p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- List footer summary -->
+          <div
+            class="flex items-center justify-between px-5 py-3 bg-orange-50 border-t border-orange-100"
+          >
+            <span class="text-xs text-gray-500">
+              {{ list.items.length }}
+              {{ list.items.length === 1 ? 'продукт' : 'продуктів' }} ·
+              {{ 0 }} куплено
+            </span>
+            <div class="flex items-center gap-1.5">
+              <div
+                class="h-1.5 rounded-full bg-orange-200 overflow-hidden"
+                style="width: 80px"
+              >
+                <div
+                  class="h-full bg-orange-400 rounded-full transition-all"
+                  [style.width.%]="25"
+                ></div>
+              </div>
+              <span class="text-xs text-orange-500 font-medium"
+                >{{ 25 }}%</span
+              >
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,143 @@
+<!-- HERO -->
+<div
+  class="relative rounded-2xl overflow-hidden min-h-[520px] flex items-center bg-cover bg-center mb-12"
+  style="
+    background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1400&auto=format&fit=crop');
+  "
+>
+  <div
+    class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"
+  ></div>
+
+  <div class="relative z-10 max-w-xl px-10 py-16">
+    <span
+      class="inline-block text-xs font-semibold uppercase tracking-widest text-orange-400 mb-4"
+    >
+      Платформа для харчування
+    </span>
+    <h1
+      class="text-5xl font-bold text-white font-serif leading-tight tracking-tight mb-5"
+    >
+      Їжте смачно.<br />Живіть здорово.
+    </h1>
+    <p class="text-white/70 text-base leading-relaxed mb-8">
+      AnyFood — це ваш особистий помічник у плануванні харчування. Рецепти,
+      КБЖУ, тижневий план і список покупок в одному місці.
+    </p>
+    <div class="flex gap-3">
+      <a
+        routerLink="/auth/register" class="inline-flex items-center gap-2 px-6
+        py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold
+        rounded-xl transition-all hover:-translate-y-px hover:shadow-lg
+        hover:shadow-orange-500/30 text-sm" > Почати безкоштовно
+        <span>→</span>
+      </a>
+      <a
+        routerLink="/auth/login" class="inline-flex items-center gap-2 px-6
+        py-3.5 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl
+        border border-white/20 transition-all text-sm" > Увійти
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="mb-12">
+  <p
+    class="text-xs font-semibold uppercase tracking-widest text-gray-400 text-center mb-2"
+  >
+    Як це працює
+  </p>
+  <h2 class="text-2xl font-bold text-gray-900 font-serif text-center mb-8">
+    Чотири кроки до ідеального меню
+  </h2>
+
+  <div class="grid grid-cols-4 gap-4">
+    @for (step of steps; track step.step) {
+      <div
+        class="relative bg-white rounded-2xl border border-gray-100 p-6 flex flex-col items-center text-center shadow-sm"
+      >
+        <!-- Step number -->
+        <span class="absolute top-4 right-4 text-xs font-bold text-gray-200">{{
+          step.step
+        }}</span>
+        <span class="text-4xl mb-4">{{ step.icon }}</span>
+        <h3 class="text-sm font-semibold text-gray-900 mb-1.5">
+          {{ step.title }}
+        </h3>
+        <p class="text-xs text-gray-400 leading-relaxed">
+          {{ step.description }}
+        </p>
+
+        <!-- Arrow connector -->
+        @if (step.step < 4) {
+          <div
+            class="absolute -right-3 top-1/2 -translate-y-1/2 z-10 text-orange-300 text-lg font-bold"
+          >
+            ›
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="mb-12">
+  <p
+    class="text-xs font-semibold uppercase tracking-widest text-gray-400 text-center mb-2"
+  >
+    Можливості
+  </p>
+  <h2 class="text-2xl font-bold text-gray-900 font-serif text-center mb-8">
+    Все що потрібно для здорового харчування
+  </h2>
+
+  <div class="grid grid-cols-3 gap-5">
+    @for (feature of features; track feature.title) {
+      <div
+        class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm hover:border-orange-200 hover:shadow-md transition-all"
+      >
+        <div
+          class="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center text-2xl mb-4"
+        >
+          {{ feature.icon }}
+        </div>
+        <h3 class="text-sm font-semibold text-gray-900 mb-2">
+          {{ feature.title }}
+        </h3>
+        <p class="text-xs text-gray-400 leading-relaxed">
+          {{ feature.description }}
+        </p>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- CTA BANNER -->
+<div
+  class="relative rounded-2xl overflow-hidden bg-cover bg-center mb-6"
+  style="
+    background-image: url('https://images.unsplash.com/photo-1543353071-873f17a7a088?w=1200&auto=format&fit=crop');
+  "
+>
+  <div
+    class="absolute inset-0 bg-gradient-to-br from-orange-600/90 to-black/80"
+  ></div>
+  <div class="relative z-10 flex flex-col items-center text-center py-14 px-6">
+    <h2 class="text-3xl font-bold text-white font-serif mb-3">
+      Готові почати?
+    </h2>
+    <p class="text-white/70 text-sm mb-7 max-w-md">
+      Реєстрація безкоштовна. Ніяких карток. Просто здорове та смачне
+      харчування.
+    </p>
+    <a
+      routerLink="/auth/register" class="inline-flex items-center gap-2 px-8
+      py-4 bg-white text-orange-500 font-bold rounded-xl hover:bg-orange-50
+      transition-all hover:-translate-y-px hover:shadow-xl text-sm" >
+      Зареєструватись безкоштовно
+      <span>→</span>
+    </a>
+  </div>
+</div>
