@@ -10,5 +10,11 @@ export interface IProduct {
   price: number;
   isSystem: boolean;
   categoryId: number;
+  userId: string | null;
+  priceHistory: {
+    recordedAt: string;
+    id: number;
+    price: number;
+  }[];
 }
 

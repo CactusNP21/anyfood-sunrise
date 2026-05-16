@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {Router, RouterLink, RouterLinkActive } from "@angular/router";
-import {NgOptimizedImage} from "@angular/common";
 import { AuthFacade } from '../../apps/auth/data-access/facades/auth.facade';
 
 @Component({
@@ -16,9 +15,14 @@ export class HeaderComponent {
 
   readonly currentUser = this.authFacade.currentUser;
   readonly $isMenuOpen = signal(false);
+  readonly $isMobileMenuOpen = signal(false);
 
   toggleMenu() {
     this.$isMenuOpen.update((v) => !v);
+  }
+
+  toggleMobileMenu() {
+    this.$isMobileMenuOpen.update((v) => !v);
   }
 
   logout() {

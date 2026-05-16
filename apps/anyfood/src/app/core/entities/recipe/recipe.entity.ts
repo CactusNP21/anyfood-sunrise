@@ -9,6 +9,7 @@ export interface IRecipe {
   products: (IProduct & {weight: number})[];
   recipeCategories: IRecipeCategory[];
   portions: number;
+  latestVersionId: number;
   description: string;
   duration: number;
   calories: number;

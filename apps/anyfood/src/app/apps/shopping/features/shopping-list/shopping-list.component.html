@@ -1,0 +1,10 @@
+@for (list of $shoppingList(); track list.id) {
+  <h3 class="text-lg">{{list.name || "Empty"}}</h3>
+  @for (product of list.items; track product.id) {
+    <div class="flex gap-4">
+      <anyfood-image [src]="product.imageUrl" [height]="64" [width]="64"/>
+      <p>{{product.productName}}</p>
+      <p>{{product.totalWeight}} g</p>
+    </div>
+  }
+}

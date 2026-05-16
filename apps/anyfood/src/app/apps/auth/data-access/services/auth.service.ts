@@ -23,13 +23,16 @@ export class AuthService {
   private readonly router = inject(Router);
 
   private readonly $currentUser = signal<IUser | null>(
-    this.loadUserFromStorage()
+    this.loadUserFromStorage(),
   );
   private readonly $error = signal<string | null>(null);
 
   readonly currentUser = this.$currentUser.asReadonly();
   readonly error = this.$error.asReadonly();
   readonly isAuthenticated = computed(() => this.$currentUser() !== null);
+  readonly isAdmin = computed(
+    () => this.$currentUser()?.roles?.includes('Admin') ?? false,
+  );
 
   login(payload: ILoginRequest) {
     this.$error.set(null);
@@ -41,7 +44,7 @@ export class AuthService {
         this.$error.set(err.error?.message ?? 'Невірний email або пароль');
         return throwError(() => err);
       }),
-      finalize(() => this.loading.stop(AUTH_LOADING_KEYS.login))
+      finalize(() => this.loading.stop(AUTH_LOADING_KEYS.login)),
     );
   }
 
@@ -55,7 +58,7 @@ export class AuthService {
         this.$error.set(err.error?.message ?? 'Помилка реєстрації');
         return throwError(() => err);
       }),
-      finalize(() => this.loading.stop(AUTH_LOADING_KEYS.register))
+      finalize(() => this.loading.stop(AUTH_LOADING_KEYS.register)),
     );
   }
 
@@ -80,7 +83,7 @@ export class AuthService {
       tap((res) => {
         this.storage.set(ACCESS_TOKEN_KEY, res.accessToken);
         this.storage.set(REFRESH_TOKEN_KEY, res.refreshToken);
-      })
+      }),
     );
   }
 

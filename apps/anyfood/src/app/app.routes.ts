@@ -38,4 +38,16 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./apps/home/home.component').then((c) => c.HomeComponent),
   },
+  {
+    path: 'schedule',
+    loadChildren: () =>
+      import('./apps/schedule/schedule.routes').then((m) => m.ScheduleRoutes),
+  },
+  {
+    path: 'shopping-list',
+    loadChildren: () =>
+      import('./apps/shopping/shopping-list.routes').then(
+        (m) => m.SHOPPING_LIST_ROUTES,
+      ),
+  }
 ];

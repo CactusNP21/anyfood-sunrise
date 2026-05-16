@@ -12,11 +12,12 @@ export class AuthFacade {
 
   readonly currentUser = this.authService.currentUser;
   readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly isAdmin = this.authService.isAdmin;
   readonly error = this.authService.error;
 
   readonly $isLoginLoading = this.loading.isLoading(AUTH_LOADING_KEYS.login);
   readonly $isRegisterLoading = this.loading.isLoading(
-    AUTH_LOADING_KEYS.register
+    AUTH_LOADING_KEYS.register,
   );
 
   login(payload: ILoginRequest) {

@@ -1,11 +1,32 @@
 <header class="bg-white border-b border-gray-100">
   <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-
     <!-- Logo -->
     <a routerLink="/" class="flex items-center gap-2.5 no-underline">
       <span class="text-2xl">🍽</span>
-      <span class="text-xl font-bold text-gray-900 font-serif tracking-tight">AnyFood</span>
+      <span class="text-xl font-bold text-gray-900 font-serif tracking-tight"
+        >AnyFood</span
+      >
     </a>
+
+    <!-- Mobile menu button -->
+    <button
+      (click)="toggleMobileMenu()"
+      class="sm:hidden p-2 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition"
+    >
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+    </button>
 
     <!-- Nav -->
     <nav class="hidden md:flex items-center gap-1">
@@ -33,11 +54,11 @@
         Рецепти
       </a>
       <a
-        routerLink="/meal-plan"
+        routerLink="/schedule"
         routerLinkActive="text-orange-500 bg-orange-50"
         class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
       >
-        Меню тижня
+        Розклад
       </a>
       <a
         routerLink="/shopping-list"
@@ -56,18 +77,24 @@
           class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-gray-50 transition"
         >
           <!-- Avatar -->
-          <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+          <div
+            class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0"
+          >
             <span class="text-sm font-bold text-orange-500 font-serif">
               {{ user.name.charAt(0).toUpperCase() }}
             </span>
           </div>
-          <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ user.name }}</span>
+          <span class="text-sm font-medium text-gray-700 hidden sm:block">{{
+            user.name
+          }}</span>
           <span class="text-xs text-gray-400">▾</span>
         </button>
 
         <!-- Dropdown -->
         @if ($isMenuOpen()) {
-          <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+          <div
+            class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
+          >
             <a
               routerLink="/profile"
               (click)="$isMenuOpen.set(false)"
@@ -88,29 +115,53 @@
         }
       </div>
     }
-
   </div>
+
+  <!-- Mobile menu -->
+  @if ($isMobileMenuOpen()) {
+    <div class="md:hidden border-t border-gray-100">
+      <nav class="max-w-6xl mx-auto px-6 py-4 flex flex-col gap-2">
+        <a
+          routerLink="/categories"
+          routerLinkActive="text-orange-500 bg-orange-50"
+          (click)="$isMobileMenuOpen.set(false)"
+          class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+        >
+          Категорії
+        </a>
+        <a
+          routerLink="/products"
+          routerLinkActive="text-orange-500 bg-orange-50"
+          (click)="$isMobileMenuOpen.set(false)"
+          class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+        >
+          Продукти
+        </a>
+        <a
+          routerLink="/recipes"
+          routerLinkActive="text-orange-500 bg-orange-50"
+          (click)="$isMobileMenuOpen.set(false)"
+          class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+        >
+          Рецепти
+        </a>
+        <a
+          routerLink="/meal-plan"
+          routerLinkActive="text-orange-500 bg-orange-50"
+          (click)="$isMobileMenuOpen.set(false)"
+          class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+        >
+          Меню тижня
+        </a>
+        <a
+          routerLink="/shopping-list"
+          routerLinkActive="text-orange-500 bg-orange-50"
+          (click)="$isMobileMenuOpen.set(false)"
+          class="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+        >
+          Список покупок
+        </a>
+      </nav>
+    </div>
+  }
 </header>
-
-
-<!--<div class="flex justify-between container px-3 py-4 text-slab border-b-black border-b-2">-->
-<!--  <div class="flex gap-8 items-center">-->
-<!--    @for (leftRoute of $leftRoutes(); track leftRoute) {-->
-<!--      <a [routerLink]="`/${leftRoute.path}`">-->
-<!--        {{leftRoute.label}}-->
-<!--      </a>-->
-<!--    }-->
-<!--  </div>-->
-
-<!--  <span>-->
-<!--    <img ngSrc="/anyfood/apps/anyfood/public/anyfood.svg" height="74" width="156" alt="logo">-->
-<!--  </span>-->
-
-<!--  <div class="flex gap-8 items-center">-->
-<!--    @for (leftRoute of $rightRoutes(); track leftRoute) {-->
-<!--      <a [routerLink]="`/${leftRoute.path}`">-->
-<!--        {{leftRoute.label}}-->
-<!--      </a>-->
-<!--    }-->
-<!--  </div>-->
-<!--</div>-->

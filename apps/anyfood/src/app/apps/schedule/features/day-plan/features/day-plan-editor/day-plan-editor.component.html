@@ -1,0 +1,28 @@
+<form>
+  <anyfood-input label="Name" inputID="day-plan-name" [formField]="dayPlanForm.name"/>
+  <anyfood-selection
+    [displayKey]="'name'"
+    [primaryKey]="'id'"
+    [imgKey]="'imageUrl'"
+    inputID="day-plan-recipes" label="Recipes" [options]="$products()" [formField]="selectedProducts"/>
+  <anyfood-selection
+    [displayKey]="'name'"
+    [primaryKey]="'id'"
+    [imgKey]="'imageUrl'"
+    [options]="$recipes()"
+    inputID="day-plan-products"
+    label="Products"
+    [formField]="selectedRecipes"/>
+  <div>
+    @for (entry of dayPlanForm.entries().value(); track entry; let index = $index) {
+      <div class="flex gap-2 flex-col justify-between">
+        <img width="120" height="120" [ngSrc]="entry.imageUrl" alt="title image" />
+        <span>{{entry.name}}</span>
+        <anyfood-input type="number" label="Вага" [inputID]="'weight' + entry.productId + entry.recipeId" [formField]="dayPlanForm.entries[index].weight"/>
+        <button type="button">X</button>
+      </div>
+    }
+  </div>
+</form>
+
+<button (click)="createDayPlan()">Create</button>
