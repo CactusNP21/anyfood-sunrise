@@ -1,4 +1,7 @@
-<div class="flex flex-col gap-4 container ms-auto me-auto">
-  <app-header/>
-  <router-outlet></router-outlet>
+<div class="flex flex-col container ms-auto me-auto">
+  <app-header />
+  <main class="max-md:pb-(--buttom-nav-height)">
+    <router-outlet />
+  </main>
+  <app-bottom-mobile-navigation />
 </div>

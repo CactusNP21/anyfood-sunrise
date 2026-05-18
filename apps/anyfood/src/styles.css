@@ -31,20 +31,22 @@ dialog {
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+
+  --buttom-nav-height: calc(4rem + env(safe-area-inset-bottom));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #191212;
-    --color-primary-hover: #d8d8d8;
-    --color-text-primary: #ce9b46;
-    --color-text-secondary: #d31616;
-    --color-bg-primary: #111;
-    --color-bg-secondary: #1e1e1e;
-    --color-bg-tertiary: #2a2a2a;
-    --color-border: rgba(255, 255, 255, 0.1);
-  }
-}
+/*@media (prefers-color-scheme: dark) {*/
+/*  :root {*/
+/*    --color-primary: #191212;*/
+/*    --color-primary-hover: #d8d8d8;*/
+/*    --color-text-primary: #ce9b46;*/
+/*    --color-text-secondary: #d31616;*/
+/*    --color-bg-primary: #111;*/
+/*    --color-bg-secondary: #1e1e1e;*/
+/*    --color-bg-tertiary: #2a2a2a;*/
+/*    --color-border: rgba(255, 255, 255, 0.1);*/
+/*  }*/
+/*}*/
 
 .text-slab {
   font-family: 'Roboto Slab', serif;
@@ -60,4 +62,10 @@ button {
   padding: 16px;
   border: 1px solid black;
   cursor: pointer;
+}
+
+@layer utilities {
+  .pb-safe-nav {
+    padding-bottom: var(--buttom-nav-height);
+  }
 }

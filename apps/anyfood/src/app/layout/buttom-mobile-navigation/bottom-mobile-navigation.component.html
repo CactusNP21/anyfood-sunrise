@@ -1,0 +1,12 @@
+<nav
+  class="flex md:hidden h-(--buttom-nav-height) fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-50"
+>
+  @for (section of sections; track section) {
+    <a
+      [routerLink]="section.path"
+      routerLinkActive="text-orange-500"
+      class="text-center flex text-sm flex-1 flex-col items-center justify-center gap-1 text-gray-600 no-underline transition-colors;"
+      >{{ section.name }}</a
+    >
+  }
+</nav>

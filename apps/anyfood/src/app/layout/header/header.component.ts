@@ -1,11 +1,12 @@
 import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { AuthFacade } from '../../apps/auth/data-access/facades/auth.facade';
+import { AnyfoodImageComponent } from '@anyfood/ui';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, AnyfoodImageComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
