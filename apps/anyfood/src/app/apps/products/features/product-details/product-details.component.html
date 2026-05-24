@@ -1,182 +1,231 @@
 @if ($productDetails(); as product) {
-  <div class="min-h-screen bg-stone-50 p-6">
-    <div class="max-w-4xl mx-auto">
+  <div class="min-h-screen bg-stone-50 pb-24">
 
-      <!-- Breadcrumb -->
-      <nav class="flex items-center gap-2 text-sm text-gray-400 mb-6">
-        <a routerLink="/products" class="hover:text-orange-500 transition">Продукти</a>
-        <span>›</span>
-        <span class="text-gray-700 font-medium">{{ product.name }}</span>
-      </nav>
+    <!-- Top bar -->
+    <div class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
+      <a routerLink="../../list" class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 transition text-gray-500">
+        ←
+      </a>
+      <span class="flex-1 text-sm font-semibold text-gray-900 truncate">{{ product.name }}</span>
+      @if ($canEdit()) {
+        <a [routerLink]="'/products/edit/' + product.id"
+           class="text-xs px-3 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:border-orange-400 hover:text-orange-500 transition">
+          Редагувати
+        </a>
+      }
+    </div>
 
-      <div class="grid grid-cols-[320px_1fr] gap-5 items-start">
+    <div class="max-w-2xl mx-auto px-4 py-5 flex flex-col gap-4">
 
-        <!-- LEFT COLUMN -->
-        <div class="flex flex-col gap-4">
+      <!-- Hero card -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
 
-          <!-- Image card -->
-          <div class="bg-white rounded-2xl border border-gray-100 p-8 flex items-center justify-center min-h-64">
-            <anyfood-image
-              [src]="product.imageUrl"
-              [width]="200"
-              [height]="200"
-              class="object-contain"
-            />
-          </div>
-
-          <!-- Category -->
-          <div class="bg-white rounded-2xl border border-gray-100 p-4">
-            <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-medium">Категорія</p>
-            <div class="flex items-center gap-2">
-              <span class="text-base">🏷</span>
-              <span class="text-sm text-gray-800">{{ product.categoryId }}</span>
-            </div>
-          </div>
-
-          <!-- Price history -->
-          <div class="bg-white rounded-2xl border border-gray-100 p-4">
-            <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 font-medium">Динаміка цін</p>
-            <div class="flex items-baseline gap-2 mb-3">
-              <span class="text-2xl font-semibold text-gray-900">{{ product.price | number:'1.2-2' }} ₴</span>
-              <span class="text-xs text-gray-400">поточна</span>
-            </div>
-            <div class="flex flex-col gap-1.5">
-              @for (entry of product.priceHistory; track entry.id) {
-                <div class="flex items-center justify-between px-3 py-2 bg-stone-50 rounded-xl">
-                  <span class="text-xs text-gray-400">{{ entry.recordedAt | date:'d MMM yyyy' }}</span>
-                  <span class="text-xs font-medium text-gray-700">{{ entry.price | number:'1.2-2' }} ₴</span>
-                </div>
-              }
-            </div>
-          </div>
-
+        <!-- Image -->
+        <div class="flex items-center justify-center bg-stone-50 h-56">
+          <anyfood-image
+            [src]="product.imageUrl"
+            [width]="200"
+            [height]="200"
+            class="object-contain h-full"
+          />
         </div>
 
-        <!-- RIGHT COLUMN -->
-        <div class="flex flex-col gap-4">
-
-          <!-- Header card -->
-          <div class="bg-white rounded-2xl border border-gray-100 p-6">
-            <div class="flex items-start justify-between mb-5">
-              <div>
-                <h1 class="text-3xl font-semibold text-gray-900 font-serif tracking-tight mb-2">
-                  {{ product.name }}
-                </h1>
-                @if (product.isSystem) {
-                  <span class="inline-block px-3 py-1 bg-orange-50 text-orange-600 text-xs rounded-lg font-medium">
-                    Системний продукт
-                  </span>
-                } @else {
-                  <span class="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-xs rounded-lg font-medium">
-                    Користувацький продукт
-                  </span>
-                }
-              </div>
-              <div class="text-right">
-                <div class="text-3xl font-semibold text-orange-500 leading-none">
-                  {{ product.price | number:'1.2-2' }} ₴
-                </div>
-                <div class="text-xs text-gray-400 mt-1">за 100г</div>
-              </div>
-            </div>
-
-            <!-- Macro grid -->
-            <div class="grid grid-cols-4 gap-3">
-              <div class="bg-stone-50 rounded-xl p-3 text-center">
-                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">Калорії</p>
-                <p class="text-2xl font-semibold text-orange-500 leading-none">{{ product.calories }}</p>
-                <p class="text-xs text-gray-400 mt-1">ккал</p>
-              </div>
-              <div class="bg-stone-50 rounded-xl p-3 text-center">
-                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">Білки</p>
-                <p class="text-2xl font-semibold text-gray-800 leading-none">{{ product.protein }}</p>
-                <p class="text-xs text-gray-400 mt-1">г</p>
-              </div>
-              <div class="bg-stone-50 rounded-xl p-3 text-center">
-                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">Жири</p>
-                <p class="text-2xl font-semibold text-gray-800 leading-none">{{ product.fat }}</p>
-                <p class="text-xs text-gray-400 mt-1">г</p>
-              </div>
-              <div class="bg-stone-50 rounded-xl p-3 text-center">
-                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">Вуглеводи</p>
-                <p class="text-2xl font-semibold text-gray-800 leading-none">{{ product.carbs }}</p>
-                <p class="text-xs text-gray-400 mt-1">г</p>
-              </div>
-            </div>
+        <!-- Name + badge + price -->
+        <div class="p-4 flex items-start justify-between gap-3">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-xl font-bold text-gray-900 font-serif tracking-tight leading-snug mb-1.5">
+              {{ product.name }}
+            </h1>
+            @if (product.isSystem) {
+              <span class="inline-block px-2.5 py-1 bg-orange-50 text-orange-500 text-xs rounded-lg font-medium">
+                Системний
+              </span>
+            } @else {
+              <span class="inline-block px-2.5 py-1 bg-blue-50 text-blue-500 text-xs rounded-lg font-medium">
+                Користувацький
+              </span>
+            }
           </div>
 
-          <!-- Macro balance -->
-          <div class="bg-white rounded-2xl border border-gray-100 p-5">
-            <p class="text-xs text-gray-400 uppercase tracking-widest mb-4 font-medium">Нутрієнтний баланс</p>
-            <div class="flex flex-col gap-3">
+          <!-- Price + edit price -->
+          <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <p class="text-2xl font-bold text-orange-500 leading-none">
+              {{ product.price | number:'1.2-2' }} ₴
+            </p>
+            <p class="text-xs text-gray-400">за 100г</p>
+            @if ($canEdit()) {
+              <button
+                (click)="openPriceModal()"
+                xs
+                ghost
+                class="text-xs text-orange-500 hover:underline mt-0.5"
+              >
+                Змінити ціну
+              </button>
+            }
+          </div>
+        </div>
+      </div>
 
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500 w-20 flex-shrink-0">Білки</span>
-                <div class="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-orange-500 rounded-full transition-all duration-500"
-                    [style.width.%]="$proteinPct()"
-                  ></div>
-                </div>
-                <span class="text-sm font-medium text-gray-700 w-10 text-right">{{ product.protein }}г</span>
-              </div>
+      <!-- Macro grid -->
+      <div class="grid grid-cols-4 gap-2">
+        <div class="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
+          <p class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">Калорії</p>
+          <p class="text-lg font-bold text-orange-500 leading-none">{{ product.calories ?? '—' }}</p>
+          <p class="text-[10px] text-gray-400 mt-1">ккал</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
+          <p class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">Білки</p>
+          <p class="text-lg font-bold text-gray-800 leading-none">{{ product.protein }}</p>
+          <p class="text-[10px] text-gray-400 mt-1">г</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
+          <p class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">Жири</p>
+          <p class="text-lg font-bold text-gray-800 leading-none">{{ product.fat }}</p>
+          <p class="text-[10px] text-gray-400 mt-1">г</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-100 p-3 text-center shadow-sm">
+          <p class="text-[10px] uppercase tracking-wider text-gray-400 mb-1">Вуглеводи</p>
+          <p class="text-lg font-bold text-gray-800 leading-none">{{ product.carbs }}</p>
+          <p class="text-[10px] text-gray-400 mt-1">г</p>
+        </div>
+      </div>
 
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500 w-20 flex-shrink-0">Жири</span>
-                <div class="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-orange-400 rounded-full transition-all duration-500"
-                    [style.width.%]="$fatPct()"
-                  ></div>
-                </div>
-                <span class="text-sm font-medium text-gray-700 w-10 text-right">{{ product.fat }}г</span>
-              </div>
+      <!-- Macro balance -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <p class="text-[11px] uppercase tracking-wider text-gray-400 mb-4 font-medium">Нутрієнтний баланс</p>
+        <div class="flex flex-col gap-3">
 
-              <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-500 w-20 flex-shrink-0">Вуглеводи</span>
-                <div class="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                  <div
-                    class="h-full bg-orange-200 rounded-full transition-all duration-500"
-                    [style.width.%]="$carbsPct()"
-                  ></div>
-                </div>
-                <span class="text-sm font-medium text-gray-700 w-10 text-right">{{ product.carbs }}г</span>
-              </div>
-
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500 w-20 flex-shrink-0">Білки</span>
+            <div class="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-orange-500 rounded-full transition-all duration-500"
+                   [style.width.%]="$proteinPct()"></div>
             </div>
+            <span class="text-xs font-medium text-gray-700 w-8 text-right">{{ product.protein }}г</span>
           </div>
 
-          <!-- Glycemic index (optional) -->
-          @if (product.glycemicIndex) {
-            <div class="bg-white rounded-2xl border border-gray-100 p-5">
-              <p class="text-xs text-gray-400 uppercase tracking-widest mb-2 font-medium">Глікемічний індекс</p>
-              <span class="text-2xl font-semibold text-gray-800">{{ product.glycemicIndex }}</span>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500 w-20 flex-shrink-0">Жири</span>
+            <div class="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-orange-400 rounded-full transition-all duration-500"
+                   [style.width.%]="$fatPct()"></div>
             </div>
-          }
+            <span class="text-xs font-medium text-gray-700 w-8 text-right">{{ product.fat }}г</span>
+          </div>
 
-          <!-- Actions -->
-          @if ($canEdit()) {
-            <div class="flex gap-3">
-              <button
-                lg
-                (click)="editProduct()"
-                class="flex-1 flex items-center justify-center gap-2"
-              >
-                Редагувати
-              </button>
-              <button
-                lg
-                danger
-                (click)="deleteProduct()"
-                class="flex items-center justify-center gap-2 px-6"
-              >
-                Видалити
-              </button>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500 w-20 flex-shrink-0">Вуглеводи</span>
+            <div class="flex-1 h-1.5 bg-stone-100 rounded-full overflow-hidden">
+              <div class="h-full bg-orange-200 rounded-full transition-all duration-500"
+                   [style.width.%]="$carbsPct()"></div>
             </div>
-          }
+            <span class="text-xs font-medium text-gray-700 w-8 text-right">{{ product.carbs }}г</span>
+          </div>
 
         </div>
       </div>
+
+      <!-- Glycemic index -->
+      @if (product.glycemicIndex) {
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <p class="text-[11px] uppercase tracking-wider text-gray-400 mb-2 font-medium">Глікемічний індекс</p>
+          <span class="text-2xl font-bold text-gray-800">{{ product.glycemicIndex }}</span>
+        </div>
+      }
+
+      <!-- Price history -->
+      @if (product.priceHistory?.length) {
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <p class="text-[11px] uppercase tracking-wider text-gray-400 mb-3 font-medium">Динаміка цін</p>
+          <div class="flex flex-col gap-2">
+            @for (entry of product.priceHistory; track entry.id) {
+              <div class="flex items-center justify-between px-3 py-2 bg-stone-50 rounded-xl">
+                <span class="text-xs text-gray-400">{{ entry.recordedAt | date:'d MMM yyyy' }}</span>
+                <span class="text-xs font-semibold text-gray-700">{{ entry.price | number:'1.2-2' }} ₴</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Delete -->
+      @if ($canEdit()) {
+        <button
+          danger
+          lg
+          (click)="deleteProduct()"
+          class="w-full"
+        >
+          Видалити продукт
+        </button>
+      }
+
     </div>
   </div>
+
+  <!-- Price modal -->
+  @if ($isPriceModalOpen()) {
+    <div class="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+
+      <!-- Backdrop -->
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        (click)="closePriceModal()"
+      ></div>
+
+      <!-- Sheet -->
+      <div class="relative z-10 w-full sm:max-w-sm bg-white rounded-t-2xl sm:rounded-2xl p-6 shadow-xl">
+
+        <h2 class="text-lg font-bold text-gray-900 font-serif mb-1">Оновити ціну</h2>
+        <p class="text-sm text-gray-400 mb-5">{{ product.name }}</p>
+
+        <!-- Current price -->
+        <div class="flex items-center justify-between px-4 py-3 bg-stone-50 rounded-xl mb-4">
+          <span class="text-sm text-gray-500">Поточна ціна</span>
+          <span class="text-sm font-semibold text-gray-700">{{ product.price | number:'1.2-2' }} ₴</span>
+        </div>
+
+        <!-- New price input -->
+        <div class="flex flex-col gap-1.5 mb-6">
+          <label class="text-xs font-semibold uppercase tracking-wide text-gray-600" for="newPrice">
+            Нова ціна (₴ за 100г)
+          </label>
+          <input
+            id="newPrice"
+            type="number"
+            [value]="$newPrice()"
+            (input)="$newPrice.set(+$any($event.target).value)"
+            min="0"
+            step="0.01"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm outline-none transition
+                   focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10"
+            placeholder="0.00"
+          />
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-3">
+          <button
+            (click)="closePriceModal()"
+            class="flex-1"
+            ghost
+          >
+            Скасувати
+          </button>
+          <button
+            (click)="submitPrice()"
+            [disabled]="$isPriceUpdating()"
+            class="flex-1 flex items-center justify-center gap-2"
+          >
+            @if ($isPriceUpdating()) {
+              <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            }
+            Зберегти
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
 }

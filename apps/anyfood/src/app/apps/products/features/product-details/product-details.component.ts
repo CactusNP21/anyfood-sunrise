@@ -7,7 +7,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductClient } from '../../../../core/clients/product/product.client';
 import { IProduct } from '../../../../core/entities/product/product.entity';
 import { AnyfoodImageComponent } from '@anyfood/ui';
@@ -17,7 +17,13 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-product-details',
-  imports: [AnyfoodImageComponent, ButtonDirective, DatePipe, DecimalPipe],
+  imports: [
+    AnyfoodImageComponent,
+    ButtonDirective,
+    DatePipe,
+    DecimalPipe,
+    RouterLink,
+  ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,11 +37,15 @@ export class ProductDetailsComponent implements OnInit {
   readonly $productDetails = signal<IProduct | null>(null);
   readonly $productId = signal<string>('');
 
+  // Price modal
+  readonly $isPriceModalOpen = signal(false);
+  readonly $newPrice = signal<number>(0);
+  readonly $isPriceUpdating = signal(false);
+
   readonly $canEdit = computed(() => {
     const product = this.$productDetails();
     const user = this.authFacade.currentUser();
     if (!product || !user) return false;
-
     if (product.isSystem) return this.authFacade.isAdmin();
     return product.userId === user.id;
   });
@@ -68,12 +78,41 @@ export class ProductDetailsComponent implements OnInit {
     effect(() => {
       const id = this.$productId();
       if (!id) return;
-      this.client.getById(id).subscribe((p) => this.$productDetails.set(p));
+      this.client.getById(id).subscribe((p) => {
+        this.$productDetails.set(p);
+        this.$newPrice.set(p.price);
+      });
     });
   }
 
   ngOnInit() {
     this.$productId.set(this.activatedRoute.snapshot.params['id']);
+  }
+
+  openPriceModal() {
+    const product = this.$productDetails();
+    if (!product) return;
+    this.$newPrice.set(product.price);
+    this.$isPriceModalOpen.set(true);
+  }
+
+  closePriceModal() {
+    this.$isPriceModalOpen.set(false);
+  }
+
+  submitPrice() {
+    const id = this.$productDetails()?.id;
+    if (!id) return;
+
+    this.$isPriceUpdating.set(true);
+    this.client.updatePrice(id, this.$newPrice()).subscribe({
+      next: (updated) => {
+        this.$productDetails.set(updated);
+        this.$isPriceModalOpen.set(false);
+        this.$isPriceUpdating.set(false);
+      },
+      error: () => this.$isPriceUpdating.set(false),
+    });
   }
 
   editProduct() {
@@ -85,10 +124,12 @@ export class ProductDetailsComponent implements OnInit {
   deleteProduct() {
     const id = this.$productDetails()?.id;
     if (!id) return;
-    this.client.delete(id).subscribe(() =>
-      this.router.navigate(['../../list'], {
-        relativeTo: this.activatedRoute,
-      }),
-    );
+    this.client
+      .delete(id)
+      .subscribe(() =>
+        this.router.navigate(['../../list'], {
+          relativeTo: this.activatedRoute,
+        }),
+      );
   }
 }

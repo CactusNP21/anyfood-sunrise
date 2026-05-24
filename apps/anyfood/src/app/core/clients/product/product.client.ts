@@ -13,6 +13,12 @@ export class ProductClient {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/products`;
 
+  getByCategory(categoryIds: number[]): Observable<IProduct[]> {
+    return this.http.get<IProduct[]>(`${this.base}/filter`, {
+      params: { categoryIds },
+    });
+  }
+
   getById(id: string): Observable<IProduct> {
     return this.http.get<IProduct>(`${this.base}/${id}`);
   }
@@ -31,6 +37,10 @@ export class ProductClient {
 
   create(body: ICreateProductRequest): Observable<IProduct> {
     return this.http.post<IProduct>(this.base, body);
+  }
+
+  updatePrice(id: number, price: number): Observable<IProduct> {
+    return this.http.patch<IProduct>(`${this.base}/${id}/price`, { price });
   }
 
   update(id: string, body: IUpdateProductRequest): Observable<IProduct> {

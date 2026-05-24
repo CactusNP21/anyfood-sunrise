@@ -1,6 +1,118 @@
-@if ($categoryDetails(); as category) {
-  <div>
-    <p>{{ category.name }}</p>
-    <p>{{ category.productCount }}</p>
-  </div>
-}
+<div class="min-h-screen bg-stone-50">
+  @if ($isLoading()) {
+    <div class="flex items-center justify-center py-24">
+      <span
+        class="w-6 h-6 border-2 border-gray-300 border-t-orange-500 rounded-full animate-spin"
+      ></span>
+    </div>
+  } @else if ($category(); as category) {
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-100 px-4 py-4">
+      <div class="max-w-2xl mx-auto">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-xs text-gray-400 mb-3">
+          <a routerLink="/categories" class="hover:text-orange-500 transition"
+            >Категорії</a
+          >
+          <span>›</span>
+          <span class="text-gray-700 font-medium">{{ category.name }}</span>
+        </nav>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <h1
+              class="text-xl font-bold text-gray-900 font-serif tracking-tight"
+            >
+              {{ category.name }}
+            </h1>
+            <p class="text-xs text-gray-400 mt-0.5">
+              {{ category.productCount }}
+              {{ category.productCount === 1 ? 'продукт' : 'продуктів' }}
+            </p>
+          </div>
+          <a
+            routerLink="/products/create"
+            class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition"
+          >
+            <span class="text-base leading-none">+</span>
+            <span>Продукт</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products list -->
+    <div class="max-w-2xl mx-auto px-4 py-5 flex flex-col gap-3">
+      @if ($products().length === 0) {
+        <!-- Empty state -->
+        <div
+          class="flex flex-col items-center justify-center py-24 text-center"
+        >
+          <span class="text-5xl mb-4">🥦</span>
+          <h2 class="text-base font-semibold text-gray-700 font-serif mb-1">
+            Продуктів ще немає
+          </h2>
+          <p class="text-sm text-gray-400 mb-5">
+            Додайте перший продукт до цієї категорії
+          </p>
+          <a
+            routerLink="/products/create"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition"
+          >
+            Додати продукт
+          </a>
+        </div>
+      } @else {
+        @for (product of $products(); track product.id) {
+          <a
+            [routerLink]="'/products/details/' + product.id"
+            class="bg-white rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 p-3 hover:border-orange-200 hover:shadow-md active:scale-[0.99] transition-all no-underline"
+          >
+            <!-- Image -->
+            <div
+              class="w-16 h-16 rounded-xl bg-stone-50 flex items-center justify-center shrink-0 overflow-hidden"
+            >
+              <anyfood-image
+                [src]="product.imageUrl"
+                [width]="64"
+                [height]="64"
+                class="object-contain"
+              />
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-gray-900 truncate">
+                {{ product.name }}
+              </p>
+
+              <!-- Macros row -->
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                @if (product.calories) {
+                  <span class="text-xs text-orange-500 font-medium"
+                    >🔥 {{ product.calories }} ккал</span
+                  >
+                }
+                <span class="text-xs text-gray-400"
+                  >Б {{ product.protein }}г</span
+                >
+                <span class="text-xs text-gray-400">Ж {{ product.fat }}г</span>
+                <span class="text-xs text-gray-400"
+                  >В {{ product.carbs }}г</span
+                >
+              </div>
+            </div>
+
+            <!-- Price -->
+            <div class="text-right shrink-0">
+              <p class="text-sm font-semibold text-orange-500">
+                {{ product.price | number: '1.2-2' }} ₴
+              </p>
+              <p class="text-xs text-gray-400">/ 100г</p>
+            </div>
+          </a>
+        }
+      }
+    </div>
+  }
+</div>
