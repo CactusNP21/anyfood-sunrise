@@ -62,7 +62,7 @@
       "executor": "@angular/build:dev-server",
       "options": {
         "host": "0.0.0.0",
-        "allowedHosts": ["192.168.1.238", "localhost"]
+        "allowedHosts": ["192.168.1.238", "localhost", "anyfood.net"]
       },
       "configurations": {
         "production": {
