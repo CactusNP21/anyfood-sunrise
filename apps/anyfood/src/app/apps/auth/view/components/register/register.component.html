@@ -1,176 +1,54 @@
 <div class="flex h-screen">
 
-  <!-- ── LEFT PANEL ── -->
-  <div
-    class="hidden lg:flex lg:w-1/2 relative bg-cover bg-center"
-    style="background-image: url('https://images.unsplash.com/photo-1543353071-873f17a7a088?w=900&auto=format&fit=crop')"
-  >
-    <div class="absolute inset-0 bg-gradient-to-br from-black/85 via-green-900/50 to-black/90"></div>
-    <div class="relative z-10 flex flex-col justify-between h-full p-12">
-
-      <div class="flex items-center gap-3">
-        <span class="text-4xl">🍽</span>
-        <span class="text-3xl font-bold text-white tracking-tight font-serif">AnyFood</span>
-      </div>
-
-      <div>
-        <h2 class="text-gray-400 text-sm uppercase tracking-widest mb-6">Що на вас чекає</h2>
-        <ul class="flex flex-col gap-5">
-          @for (perk of perks; track perk.icon) {
-            <li class="flex items-start gap-4">
-              <span class="text-2xl mt-0.5">{{ perk.icon }}</span>
-              <div>
-                <p class="text-white font-semibold text-sm">{{ perk.title }}</p>
-                <p class="text-white/60 text-xs mt-0.5 leading-relaxed">{{ perk.description }}</p>
-              </div>
-            </li>
-          }
-        </ul>
-      </div>
-
-    </div>
-  </div>
-
   <!-- ── RIGHT PANEL ── -->
-  <div class="w-full lg:w-1/2 flex items-center justify-center bg-orange-50 px-8 py-12 overflow-y-auto">
+  <div class="w-full flex items-center justify-center bg-orange-50 px-8 py-12 overflow-y-auto">
     <div class="w-full max-w-md">
 
       <div class="mb-7">
         <h1 class="text-4xl font-bold text-gray-900 font-serif tracking-tight mb-2">Починаємо!</h1>
-        <p class="text-gray-500 text-sm">Безкоштовно. Без карток. Просто їжте смачно.</p>
       </div>
-
-      @if (error()) {
-        <div class="flex items-center gap-3 bg-red-50 border border-red-200 border-l-4 border-l-red-500 rounded-xl px-4 py-3 mb-5 text-red-600 text-sm">
-          <span>⚠</span>
-          <span>{{ error() }}</span>
-        </div>
-      }
 
       <form novalidate class="flex flex-col gap-4">
 
-        <!-- Name -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wide text-gray-800" for="name">Імʼя</label>
-          <div class="relative flex items-center">
-            <span class="absolute left-3.5 text-base opacity-50 pointer-events-none">✏️</span>
-            <input
-              id="name"
-              type="text"
-              [formField]="form.name"
-              placeholder="Ваше імʼя"
-              autocomplete="given-name"
-              class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm outline-none transition
-                     focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-gray-300"
-              [class.border-red-400]="$submitted() && form.name().invalid()"
-            />
-          </div>
-          @if ($submitted() && form.name().errors()) {
-            <p class="text-xs text-red-500">Імʼя обовʼязкове</p>
-          }
-        </div>
+          <anyfood-input
+            [inputID]="'name'"
+            placeholder="Вася"
+            [label]="'Імʼя'"
+            [formField]="form.name"
+          />
 
-        <!-- Username -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wide text-gray-800" for="username">Імʼя користувача</label>
-          <div class="relative flex items-center">
-            <span class="absolute left-3.5 text-base opacity-50 pointer-events-none">👤</span>
-            <input
-              id="username"
-              type="text"
-              [formField]="form.username"
-              placeholder="your_username"
-              autocomplete="username"
-              class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm outline-none transition
-                     focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-gray-300"
-              [class.border-red-400]="$submitted() && form.username().invalid()"
-            />
-          </div>
-          @if ($submitted() && form.username().errors()) {
-            <p class="text-xs text-red-500">Імʼя користувача обовʼязкове</p>
-          }
-        </div>
+        <anyfood-input
+          [inputID]="'username'"
+          placeholder="vasya"
+          [label]="'Логін'"
+          [formField]="form.username"
+        />
 
-        <!-- Email -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wide text-gray-800" for="email">Email</label>
-          <div class="relative flex items-center">
-            <span class="absolute left-3.5 text-base opacity-50 pointer-events-none">✉️</span>
-            <input
-              id="email"
-              type="email"
-              [formField]="form.email"
-              placeholder="your@email.com"
-              autocomplete="email"
-              class="w-full pl-10 pr-4 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm outline-none transition
-                     focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-gray-300"
-              [class.border-red-400]="$submitted() && form.email().invalid()"
-            />
-          </div>
-        </div>
+        <anyfood-input
+          [inputID]="'email'"
+          placeholder="vasya@gmail.com"
+          [label]="'Пошта'"
+          [autocomplete]="'email'"
+          [formField]="form.email"
+        />
 
-        <!-- Password -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wide text-gray-800" for="password">Пароль</label>
-          <div class="relative flex items-center">
-            <span class="absolute left-3.5 text-base opacity-50 pointer-events-none">🔒</span>
-            <input
-              id="password"
-              [type]="$showPassword() ? 'text' : 'password'"
-              [formField]="form.password"
-              placeholder="Мінімум 8 символів"
-              autocomplete="new-password"
-              class="w-full pl-10 pr-11 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm outline-none transition
-                     focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-gray-300"
-              [class.border-red-400]="$submitted() && form.password().invalid()"
-            />
-            <button
-              type="button"
-              class="absolute right-3 text-lg opacity-60 hover:opacity-100 transition"
-            >
-              {{ $showPassword() ? '🙈' : '👁' }}
-            </button>
-          </div>
+        <anyfood-input
+          [inputID]="'password'"
+          placeholder="Мінімум 8 символів"
+          [label]="'Пароль'"
+          [autocomplete]="'new-password'"
+          [formField]="form.password"
+          type="password"
+        />
 
-          @if (form.password().value()) {
-            <div class="flex items-center gap-2 mt-1">
-              @for (i of [1, 2, 3, 4]; track i) {
-                <div
-                  class="flex-1 h-1 rounded-full transition-all"
-                  [class]="i <= getPasswordStrength().level ? getPasswordStrength().color : 'bg-gray-200'"
-                ></div>
-              }
-              <span class="text-xs font-medium min-w-14 text-right" [class]="'text-' + getPasswordStrength().color.replace('bg-', '')">
-                {{ getPasswordStrength().label }}
-              </span>
-            </div>
-          }
-
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="flex flex-col gap-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wide text-gray-800" for="confirmPassword">Повторіть пароль</label>
-          <div class="relative flex items-center">
-            <span class="absolute left-3.5 text-base opacity-50 pointer-events-none">🔒</span>
-            <input
-              id="confirmPassword"
-              [type]="$showConfirm() ? 'text' : 'password'"
-              [formField]="form.confirmPassword"
-              placeholder="••••••••"
-              autocomplete="new-password"
-              class="w-full pl-10 pr-11 py-3.5 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm outline-none transition
-                     focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-gray-300"
-              [class.border-red-400]="$submitted() && form.confirmPassword().invalid()"
-            />
-            <button
-              type="button"
-              class="absolute right-3 text-lg opacity-60 hover:opacity-100 transition"
-            >
-              {{ $showConfirm() ? '🙈' : '👁' }}
-            </button>
-          </div>
-        </div>
+        <anyfood-input
+          [inputID]="'repeat-password'"
+          placeholder="••••••••"
+          [label]="'Повторіть пароль'"
+          [autocomplete]="'new-password'"
+          [formField]="form.confirmPassword"
+          type="password"
+        />
 
         <button
           type="button"

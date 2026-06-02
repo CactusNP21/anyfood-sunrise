@@ -11,6 +11,7 @@ import { LoadingService } from '../../../../../core/services/loading.service';
 import { AUTH_LOADING_KEYS } from '../../../constants/auth-loading-keys.constant';
 import { IRegisterRequest } from '../../../models/register-request.model';
 import { email, form, FormField, minLength, pattern, required } from '@angular/forms/signals';
+import { AnyfoodInputComponent } from '@anyfood/ui';
 
 function passwordMatchValidator(control: AbstractControl) {
   const password = control.get('password')?.value;
@@ -24,7 +25,7 @@ function passwordMatchValidator(control: AbstractControl) {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, FormField],
+  imports: [ReactiveFormsModule, RouterLink, FormField, AnyfoodInputComponent],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent implements OnInit {
@@ -48,43 +49,21 @@ export class RegisterComponent implements OnInit {
   });
 
   form = form(this.$registerFormModel, (form) => {
-    required(form.name);
-    required(form.username);
-    required(form.email);
-    required(form.password);
-    required(form.confirmPassword);
+    required(form.name, {message: 'Імʼя обовʼязкове'});
+    required(form.username, {message: 'Логін обовʼязковий'});
+    required(form.email, {message: 'Пошта обовʼязкова'});
+    required(form.password, {message: 'Пароль обовʼязковий'});
+    required(form.confirmPassword, {message: "Повторити пароль обовʼязково"});
 
-    email(form.email);
+    email(form.email, {message: 'Неправильна пошта'});
 
-    minLength(form.name, 2);
-    minLength(form.username, 3);
-    minLength(form.password, 8);
+    minLength(form.name, 2, {message: 'Мінімальне імʼя 2 символи'});
+    minLength(form.username, 3, {message: 'Мінімальна довжина логіну 2 символи'});
+    minLength(form.password, 8, {
+      message: 'Мінімальна довжина паролю 8 символів',
+    });
 
-    // pattern(form.password)
   });
-
-  readonly perks = [
-    {
-      icon: '📖',
-      title: 'Необмежені рецепти',
-      description: 'Зберігайте та організовуйте всі свої страви',
-    },
-    {
-      icon: '🛒',
-      title: 'Розумний список покупок',
-      description: 'Автоматична генерація з рецептів тижня',
-    },
-    {
-      icon: '📊',
-      title: 'Контроль харчування',
-      description: 'КБЖУ для кожного рецепту і дня',
-    },
-    {
-      icon: '📅',
-      title: 'Планувальник меню',
-      description: 'Плануйте харчування на весь тиждень',
-    },
-  ];
 
   ngOnInit() {
     this.facade.clearError();
@@ -115,7 +94,6 @@ export class RegisterComponent implements OnInit {
 
     const formState = this.form();
     if (formState.invalid()) return;
-
 
     this.facade.register(formState.value()).subscribe();
   }

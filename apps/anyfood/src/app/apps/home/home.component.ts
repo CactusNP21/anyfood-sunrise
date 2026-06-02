@@ -4,7 +4,7 @@ import { DishComponent } from '../../shared/dish/dish.component';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, DishComponent],
+  imports: [],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })

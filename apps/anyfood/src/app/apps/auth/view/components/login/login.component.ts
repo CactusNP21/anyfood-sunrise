@@ -30,9 +30,9 @@ export class LoginComponent implements OnInit {
   });
 
   readonly form = form(this.$loginFormModel, (form) => {
-    required(form.username);
-    minLength(form.username, 2)
-    required(form.password);
+    required(form.username, { message: 'Логін обовʼязковий' });
+    minLength(form.username, 2);
+    required(form.password, { message: 'Пароль обовʼязковий' });
   });
 
   ngOnInit() {
@@ -41,9 +41,12 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    this.form.username().markAsTouched();
     const formState = this.form();
-    if (formState.invalid()) return;
+    if (formState.invalid()) {
+      this.form.username().markAsTouched();
+      this.form.password().markAsTouched();
+      return;
+    }
 
     this.facade.login(formState.value()).subscribe();
   }
