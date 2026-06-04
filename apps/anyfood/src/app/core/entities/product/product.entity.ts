@@ -9,7 +9,7 @@ export interface IProduct {
   imageUrl: string;
   price: number;
   isSystem: boolean;
-  categoryId: number;
+  categories: number[];
   userId: string | null;
   priceHistory: {
     recordedAt: string;

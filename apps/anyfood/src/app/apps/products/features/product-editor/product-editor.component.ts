@@ -37,7 +37,7 @@ export class ProductEditorComponent implements OnInit {
   $productFormModel = signal<ICreateProductRequest>({
     name: '',
     carbs: 0,
-    categoryIds: [],
+    categories: [],
     fat: 0,
     imageUrl: '',
     price: 0,
@@ -68,7 +68,7 @@ export class ProductEditorComponent implements OnInit {
       this.$productFormModel.set({
         name: product.name,
         carbs: product.carbs,
-        categoryIds: [product.categoryId],
+        categories: product.categories,
         fat: product.fat,
         imageUrl: product.imageUrl,
         price: product.price,
@@ -83,7 +83,7 @@ export class ProductEditorComponent implements OnInit {
 
   productForm = form(this.$productFormModel, (path) => {
     required(path.name);
-    required(path.categoryIds);
+    required(path.categories);
   });
 
   createProduct() {

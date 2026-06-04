@@ -10,11 +10,8 @@ export type ICreateProductRequest = Omit<
   | 'calories'
   | 'userId'
   | 'priceHistory'
-  | 'categoryId'
   | 'glycemicIndex'
-> & {
-  categoryIds: number[];
-};
+>
 
 // Update — same shape
 export type IUpdateProductRequest = ICreateProductRequest;
