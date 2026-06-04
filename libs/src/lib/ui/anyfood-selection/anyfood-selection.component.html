@@ -1,25 +1,53 @@
-<div
-  class="flex flex-col w-full"
-  (click)="openOverlay()"
-  cdkOverlayOrigin
-  #trigger="cdkOverlayOrigin"
->
+<div class="flex flex-col w-full">
   <anyfood-label [controlId]="$id()" [text]="$label()" />
-  <div class="flex gap-2 flex-1">
+
+  <!-- Trigger -->
+  <div
+    class="min-h-[46px] flex flex-wrap items-center gap-1.5 px-3 py-2 border rounded-xl border-gray-200 bg-white cursor-pointer transition focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-500/10"
+    [class.border-orange-400]="$isOverlayOpen()"
+    [class.ring-4]="$isOverlayOpen()"
+    [class.ring-orange-500]="$isOverlayOpen()"
+    (click)="openOverlay(); inputElement.focus()"
+    cdkOverlayOrigin
+    #trigger="cdkOverlayOrigin"
+  >
+    <!-- Selected chips -->
+    @for (selected of $selectedOptions(); track selected) {
+      <span
+        class="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 border border-orange-200 text-orange-600 text-xs font-medium rounded-lg"
+        (click)="$event.stopPropagation(); toggleOption(selected)"
+      >
+        {{ getDisplay(selected) }}
+        <span class="text-orange-400 hover:text-orange-600 leading-none"
+          >×</span
+        >
+      </span>
+    }
+
+    <!-- Placeholder or input -->
     <input
+      #inputElement
       [id]="$id()"
       [formField]="$input"
-      class="border rounded-2xl p-2 flex-1"
-      [placeholder]="$placeholder()"
+      class="flex-1 min-w-[80px] text-sm text-gray-700 outline-none bg-transparent placeholder:text-gray-300"
+      [placeholder]="$selectedOptions().length === 0 ? $placeholder() : ''"
+      (click)="$event.stopPropagation(); openOverlay()"
     />
-    <span>dropdown_icon</span>
+
+    <!-- Arrow -->
+    <span
+      class="ml-auto text-gray-400 text-xs transition-transform duration-200 flex-shrink-0"
+      [class.rotate-180]="$isOverlayOpen()"
+    >
+      ▾
+    </span>
   </div>
 </div>
 
+<!-- Dropdown overlay -->
 <ng-template
   cdkConnectedOverlay
   cdkConnectedOverlayHasBackdrop
-  cdkConnectedOverlayFlexibleDimensions
   cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
   [cdkConnectedOverlayOrigin]="trigger"
   cdkConnectedOverlayMatchWidth
@@ -29,34 +57,69 @@
   (detach)="closeOverlay()"
   (backdropClick)="closeOverlay()"
 >
-  <div class="bg-amber-300 w-full option-text overflow-auto max-h-96">
+  <div
+    class="bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden mt-1.5 max-h-72 overflow-y-auto"
+  >
     @let displayKey = $displayKey();
     @let primaryKey = $primaryKey();
-    @for (opt of $options(); track opt) {
+
+    @if ($options().length === 0) {
+      <div class="px-4 py-6 text-center text-sm text-gray-400">
+        Нічого не знайдено
+      </div>
+    }
+
+    @for (opt of $options(); track opt; let last = $last) {
+      @let isSelected = $valueMap().has(primaryKey ? opt[primaryKey] : opt!);
+
       <div
-        class="w-full border-t bg-[#F4F7FF] p-2 flex gap-3 items-center"
-        [class.bg-blue-500]="
-          $valueMap().has(primaryKey ? opt[primaryKey] : opt!)
-        "
+        class="flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors"
+        [class.bg-orange-50]="isSelected"
+        [class.hover:bg-stone-50]="!isSelected"
+        [class.border-b]="!last"
+        [class.border-gray-50]="!last"
         (click)="toggleOption(opt)"
       >
+        <!-- Image -->
         @if ($imgKey()) {
-          <span class="w-8 h-8">
+          <div
+            class="w-8 h-8 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0"
+          >
             <img
-              class="border border-[#000476] rounded h-full w-full"
-              [decoding]="'async'"
+              class="w-full h-full object-cover"
               [ngSrc]="getImg(opt)"
               width="32"
               height="32"
-              alt="product photo"
+              alt="option"
             />
-          </span>
+          </div>
         }
-        @if (displayKey) {
-          <span>
+
+        <!-- Label -->
+        <span
+          class="flex-1 text-sm"
+          [class.font-medium]="isSelected"
+          [class.text-orange-600]="isSelected"
+          [class.text-gray-700]="!isSelected"
+        >
+          @if (displayKey) {
             {{ opt[displayKey] }}
-          </span>
-        }
+          } @else {
+            {{ opt }}
+          }
+        </span>
+
+        <!-- Checkmark -->
+        <span
+          class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
+          [class.bg-orange-500]="isSelected"
+          [class.border-2]="!isSelected"
+          [class.border-gray-200]="!isSelected"
+        >
+          @if (isSelected) {
+            <span class="text-white text-[10px] font-bold leading-none">✓</span>
+          }
+        </span>
       </div>
     }
   </div>

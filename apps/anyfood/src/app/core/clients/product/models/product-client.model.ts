@@ -1,7 +1,20 @@
+// apps/anyfood/src/app/core/clients/product/models/product-client.model.ts
+
 import { IProduct } from '../../../entities/product/product.entity';
 
-// Create — omit server-generated fields
-export type ICreateProductRequest = Omit<IProduct, 'id'| 'isSystem' | 'calories' | 'userId' | 'priceHistory'>;
+// Create — omit server-generated fields, categoryIds is now an array
+export type ICreateProductRequest = Omit<
+  IProduct,
+  | 'id'
+  | 'isSystem'
+  | 'calories'
+  | 'userId'
+  | 'priceHistory'
+  | 'categoryId'
+  | 'glycemicIndex'
+> & {
+  categoryIds: number[];
+};
 
-// Update — same as create but without isSystem
-export type IUpdateProductRequest = Omit<ICreateProductRequest, 'isSystem'>;
+// Update — same shape
+export type IUpdateProductRequest = ICreateProductRequest;

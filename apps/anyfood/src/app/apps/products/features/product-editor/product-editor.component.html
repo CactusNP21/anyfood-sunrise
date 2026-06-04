@@ -1,66 +1,147 @@
-<form class="flex flex-col gap-2">
-  <anyfood-input
-    inputID="productName"
-    [formField]="productForm.name"
-    [label]="'Name'"
-  />
-  <anyfood-selection
-    inputID="productCategoryId"
-    [formField]="productForm.categoryId"
-    [label]="'Product category'"
-    [options]="$categories()"
-    [primaryKey]="'id'"
-    [valueKey]="'id'"
-    [displayKey]="'name'"
-  />
-  <anyfood-input
-    inputID="carbs"
-    [formField]="productForm.carbs"
-    [label]="'Carbs'"
-  />
-  <anyfood-input
-    inputID="protein"
-    [formField]="productForm.fat"
-    [label]="'Fat'"
-  />
-  <anyfood-input
-    inputID="fat"
-    [formField]="productForm.protein"
-    [label]="'Protein'"
-  />
-  <anyfood-input
-    inputID="glycemicIndex"
-    [formField]="productForm.glycemicIndex"
-    [label]="'Glycemic index'"
-  />
-  <anyfood-input
-    inputID="price"
-    [formField]="productForm.price"
-    [label]="'Price'"
-  />
-  <anyfood-input
-    inputID="imageUrl"
-    [formField]="productForm.imageUrl"
-    [label]="'Image URL'"
-  />
-  @switch ($hasId()) {
-    @case (true) {
-      <button
-        [disabled]="!productForm().valid()"
-        type="button"
-        (click)="editProduct()"
-      >
-        Edit product
-      </button>
-    }
-    @default {
-      <button
-        [disabled]="!productForm().valid()"
-        type="button"
-        (click)="createProduct()"
-      >
-        Create product
-      </button>
-    }
-  }
-</form>
+<div class="min-h-screen bg-stone-50 pb-24">
+  <!-- Top bar -->
+  <div
+    class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3"
+  >
+    <a
+      routerLink="../list"
+      class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 transition text-gray-500"
+    >
+      ←
+    </a>
+    <span class="flex-1 text-sm font-semibold text-gray-900">
+      {{ $hasId() ? 'Редагування продукту' : 'Новий продукт' }}
+    </span>
+    <button
+      type="button"
+      [disabled]="!productForm().valid()"
+      (click)="$hasId() ? editProduct() : createProduct()"
+      class="px-4 py-1.5 text-sm font-semibold rounded-xl"
+    >
+      {{ $hasId() ? 'Зберегти' : 'Створити' }}
+    </button>
+  </div>
+
+  <div class="max-w-2xl mx-auto px-4 py-5 flex flex-col gap-4">
+    <!-- SECTION: Основне -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Основне
+        </p>
+      </div>
+      <div class="px-4 pb-4 flex flex-col gap-4">
+        <anyfood-input
+          inputID="productName"
+          [formField]="productForm.name"
+          label="Назва продукту"
+          placeholder="Наприклад: Куряча грудка"
+        />
+
+        <anyfood-input
+          inputID="imageUrl"
+          [formField]="productForm.imageUrl"
+          label="Image URL"
+          placeholder="https://..."
+        />
+
+        <!-- Image preview -->
+        @if ($imagePreview(); as url) {
+          <div
+            class="rounded-xl overflow-hidden border border-gray-100 bg-stone-50 flex items-center justify-center h-40"
+          >
+            <anyfood-image [src]="url" />
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- SECTION: Категорії -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Категорії
+        </p>
+      </div>
+      <div class="px-4 pb-4">
+        <anyfood-selection
+          inputID="productCategoryIds"
+          [formField]="productForm.categoryIds"
+          label="Категорії продукту"
+          [options]="$categories()"
+          [primaryKey]="'id'"
+          [valueKey]="'id'"
+          [displayKey]="'name'"
+        />
+      </div>
+    </div>
+
+    <!-- SECTION: Макронутрієнти -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Макронутрієнти
+        </p>
+        <p class="text-xs text-gray-400 mt-0.5">на 100г продукту</p>
+      </div>
+      <div class="px-4 pb-4 grid grid-cols-3 gap-3">
+        <anyfood-input
+          inputID="protein"
+          [formField]="productForm.protein"
+          label="Білки (г)"
+          type="number"
+          placeholder="0"
+        />
+        <anyfood-input
+          inputID="fat"
+          [formField]="productForm.fat"
+          label="Жири (г)"
+          type="number"
+          placeholder="0"
+        />
+        <anyfood-input
+          inputID="carbs"
+          [formField]="productForm.carbs"
+          label="Вуглеводи (г)"
+          type="number"
+          placeholder="0"
+        />
+      </div>
+    </div>
+
+    <!-- SECTION: Ціна -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Ціна
+        </p>
+        <p class="text-xs text-gray-400 mt-0.5">за 100г продукту</p>
+      </div>
+      <div class="px-4 pb-4">
+        <anyfood-input
+          inputID="price"
+          [formField]="productForm.price"
+          label="Ціна (₴)"
+          type="number"
+          placeholder="0.00"
+        />
+      </div>
+    </div>
+  </div>
+</div>

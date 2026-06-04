@@ -4,25 +4,26 @@ import {
   computed,
   inject,
   OnInit,
-  Signal,
   signal,
 } from '@angular/core';
 import { CategoryClient } from '../../../../core/clients/category/category.client';
-import { ActivatedRoute, Router } from '@angular/router';
-import {
-  ICategoryResponse,
-  ICreateCategoryRequest,
-} from '../../../../core/clients/category/models/category-client.model';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ICategoryResponse } from '../../../../core/clients/category/models/category-client.model';
 import { form, FormField, required } from '@angular/forms/signals';
 import { ProductClient } from '../../../../core/clients/product/product.client';
 import { ICreateProductRequest } from '../../../../core/clients/product/models/product-client.model';
-import { AnyfoodInputComponent, AnyfoodSelectionComponent } from '@anyfood/ui';
+import { AnyfoodImageComponent, AnyfoodInputComponent, AnyfoodSelectionComponent } from '@anyfood/ui';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-product-editor',
-  imports: [AnyfoodInputComponent, FormField, AnyfoodSelectionComponent],
+  imports: [
+    AnyfoodInputComponent,
+    FormField,
+    AnyfoodSelectionComponent,
+    RouterLink,
+    AnyfoodImageComponent,
+  ],
   templateUrl: './product-editor.component.html',
   styleUrl: './product-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,9 +37,8 @@ export class ProductEditorComponent implements OnInit {
   $productFormModel = signal<ICreateProductRequest>({
     name: '',
     carbs: 0,
-    categoryId: 0,
+    categoryIds: [],
     fat: 0,
-    glycemicIndex: 0,
     imageUrl: '',
     price: 0,
     protein: 0,
@@ -54,13 +54,26 @@ export class ProductEditorComponent implements OnInit {
     return Boolean(id && !isNaN(+id));
   });
 
+  $imagePreview = computed(() => {
+    const url = this.productForm.imageUrl().value();
+    return typeof url === 'string' && url.trim().length > 0 ? url : null;
+  });
+
   ngOnInit() {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     if (!this.idExists(id)) return;
 
     this.$id.set(id);
     this.productClient.getById(id).subscribe((product) => {
-      this.$productFormModel.set(product);
+      this.$productFormModel.set({
+        name: product.name,
+        carbs: product.carbs,
+        categoryIds: [product.categoryId],
+        fat: product.fat,
+        imageUrl: product.imageUrl,
+        price: product.price,
+        protein: product.protein,
+      });
     });
   }
 
@@ -69,8 +82,8 @@ export class ProductEditorComponent implements OnInit {
   }
 
   productForm = form(this.$productFormModel, (path) => {
-    required(path.categoryId);
     required(path.name);
+    required(path.categoryIds);
   });
 
   createProduct() {

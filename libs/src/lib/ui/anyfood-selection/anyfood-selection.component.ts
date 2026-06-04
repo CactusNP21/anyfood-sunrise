@@ -37,11 +37,9 @@ function isObject(val: unknown): val is object {
 export class AnyfoodSelectionComponent<
   TOption,
   TValue extends TOption[keyof TOption] | TOption,
-  TValueKey extends
-    {
-        [K in keyof TOption]: TOption[K] extends TValue ? K : never;
-      }[keyof TOption]
-    ,
+  TValueKey extends {
+    [K in keyof TOption]: TOption[K] extends TValue ? K : never;
+  }[keyof TOption],
 > implements FormValueControl<TValue | TValue[] | undefined>
 {
   value = model<TValue | TValue[] | undefined>();
@@ -88,6 +86,17 @@ export class AnyfoodSelectionComponent<
 
   $input = form(signal(''));
   $isOverlayOpen = signal(false);
+
+  $selectedOptions = computed<TOption[]>(() => {
+    const valueMap = this.$valueMap();
+    const options = this.$options();
+    const primaryKey = this.$primaryKey();
+
+    return options.filter((opt) => {
+      const key = primaryKey ? opt[primaryKey] : opt;
+      return valueMap.has(key);
+    });
+  });
 
   // --- Core helpers ---
 
