@@ -11,7 +11,7 @@ import { CategoryClient } from '../../../../../core/clients/category/category.cl
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-categories-editor',
+  selector: 'app-recipe-categories-editor',
   imports: [AnyfoodInputComponent, FormField],
   templateUrl: './categories-editor.component.html',
   styleUrl: './categories-editor.component.scss',

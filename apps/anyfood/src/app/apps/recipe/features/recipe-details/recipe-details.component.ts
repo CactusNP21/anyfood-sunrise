@@ -9,10 +9,12 @@ import { RecipeClient } from '../../../../core/clients/recipe/recipe.client';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IRecipe } from '../../../../core/entities/recipe/recipe.entity';
 import { AnyfoodImageComponent } from '@anyfood/ui';
+import { DetailsTopBarComponent } from '../../../../shared/features/details-top-bar/details-top-bar.component';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-recipe-details',
-  imports: [AnyfoodImageComponent],
+  imports: [AnyfoodImageComponent, DetailsTopBarComponent, DecimalPipe],
   templateUrl: './recipe-details.component.html',
   styleUrl: './recipe-details.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

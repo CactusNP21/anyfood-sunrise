@@ -6,6 +6,7 @@ export interface IGenerateShoppingListRequest {
   name:string;
   recipes:
     {recipeVersionId: number; weight: number}[];
+  dayPlanIds: number[];
 }
 
 interface IShoppingList {

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { isAuthGuard } from '../auth/guards/is-auth.guard';
 
 export const RECIPE_ROUTES: Routes = [
   {
@@ -13,6 +14,7 @@ export const RECIPE_ROUTES: Routes = [
         title: 'Продукти',
       },
       {
+        canActivate: [isAuthGuard],
         path: 'create',
         loadComponent: () =>
           import('./features/recipe-editor/recipe-editor.component').then(
@@ -21,11 +23,20 @@ export const RECIPE_ROUTES: Routes = [
         title: 'Створення рецепту',
       },
       {
+        canActivate: [isAuthGuard],
+        path: 'edit/:id',
+        loadComponent: () =>
+          import('./features/recipe-editor/recipe-editor.component').then(
+            (m) => m.RecipeEditorComponent,
+          ),
+        title: 'Редагування рецепту',
+      },
+      {
         path: 'details/:id',
         loadComponent: () =>
-          import(
-            './features/recipe-details/recipe-details.component'
-            ).then((m) => m.RecipeDetailsComponent),
+          import('./features/recipe-details/recipe-details.component').then(
+            (m) => m.RecipeDetailsComponent,
+          ),
         title: 'Рецепт',
       },
       {

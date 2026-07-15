@@ -1,26 +1,224 @@
-<form class="flex flex-col gap-2">
-  <anyfood-input [formField]="recipeForm.name" [inputID]="'recipeName'" [label]="'Name'"/>
-  <anyfood-selection [options]="$products()"
-                     [primaryKey]="'id'"
-                     [displayKey]="'name'"
-                     [imgKey]="'imageUrl'"
-                     [formField]="selectedProducts" [inputID]="'recipeIngredients'" [label]="'Products'"/>
-  <div class="flex gap-5 flex-wrap">
-    @for (product of selectedProducts().value(); track product.id; let index = $index) {
-      <div class="flex gap-2 flex-col justify-between">
-        <img width="120" height="120" [ngSrc]="product.imageUrl" alt="title image" />
-        <span>{{product.name}}</span>
-        <anyfood-input type="number" label="Вага" [inputID]="'wight' + product.id" [formField]="recipeForm.recipeProducts[index].weight"/>
-        <button type="button">X</button>
-      </div>
-    }
+<!-- apps/anyfood/src/app/apps/recipe/features/recipe-editor/recipe-editor.component.html -->
+
+<div class="min-h-screen bg-stone-50 pb-24">
+  <!-- Top bar -->
+  <div
+    class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3"
+  >
+    <a
+      routerLink="../../list"
+      class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 transition text-gray-500"
+    >
+      ←
+    </a>
+    <span class="flex-1 text-sm font-semibold text-gray-900">
+      {{ $hasId() ? 'Редагування рецепту' : 'Новий рецепт' }}
+    </span>
+    <button
+      type="button"
+      [disabled]="recipeForm().invalid()"
+      (click)="save()"
+      sm
+    >
+      {{ $hasId() ? 'Зберегти' : 'Створити' }}
+    </button>
   </div>
-  <anyfood-input [formField]="recipeForm.description" [inputID]="'recipeDescription'" [label]="'Description'"/>
-  <anyfood-input [formField]="recipeForm.imageUrl" [inputID]="'recipeImage'" [label]="'Image'"/>
 
-  <anyfood-input [formField]="recipeForm.duration" [inputID]="'recipeDuration'" [label]="'Duration'"/>
-  <anyfood-input [formField]="recipeForm.portions" [inputID]="'recipePortions'" [label]="'Portions'"/>
+  <div class="max-w-2xl mx-auto px-4 py-5 flex flex-col gap-4">
+    <!-- SECTION: Основне -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Основне
+        </p>
+      </div>
+      <div class="px-4 pb-4 flex flex-col gap-4">
+        <anyfood-input
+          inputID="recipeName"
+          [formField]="recipeForm.name"
+          label="Назва рецепту"
+          placeholder="Наприклад: Борщ класичний"
+        />
+        <anyfood-input
+          inputID="recipeImageUrl"
+          [formField]="recipeForm.imageUrl"
+          label="Посилання на зображення"
+          placeholder="https://..."
+        />
+        @if ($imagePreview(); as url) {
+          <div
+            class="rounded-xl overflow-hidden border border-gray-100 bg-stone-50 flex items-center justify-center h-44"
+          >
+            <anyfood-image [height]="176" [width]="320" [src]="url" />
+          </div>
+        }
+      </div>
+    </div>
 
+    <!-- SECTION: Категорії -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Категорії
+        </p>
+      </div>
+      <div class="px-4 pb-4">
+        <anyfood-selection
+          inputID="recipeCategories"
+          [formField]="recipeForm.recipeCategories"
+          label="Категорії рецепту"
+          [options]="$categories()"
+          [primaryKey]="'id'"
+          [displayKey]="'name'"
+        />
+      </div>
+    </div>
 
-  <button type="button" (click)="createRecipe()">Створити рецепт</button>
-</form>
+    <!-- SECTION: Інгредієнти -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Інгредієнти
+        </p>
+        <p class="text-xs text-gray-400 mt-0.5">
+          Оберіть продукти та вкажіть вагу в грамах
+        </p>
+      </div>
+      <div class="px-4 pb-2">
+        <anyfood-selection
+          inputID="recipeProducts"
+          [formField]="$selectedProducts"
+          label="Продукти"
+          [options]="$products()"
+          [primaryKey]="'id'"
+          [displayKey]="'name'"
+          [imgKey]="'imageUrl'"
+          placeholder="Пошук продукту..."
+        />
+      </div>
+
+      <!-- Ingredient list -->
+      @if ($selectedProducts().value().length > 0) {
+        <div class="mt-2 border-t border-gray-50">
+          @for (
+            product of $selectedProducts().value();
+            track product.id;
+            let index = $index;
+            let last = $last
+          ) {
+            <div
+              class="flex items-center gap-3 px-4 py-3"
+              [class.border-b]="!last"
+              [class.border-gray-50]="!last"
+            >
+              <!-- Product image -->
+              <div
+                class="w-10 h-10 rounded-xl bg-stone-50 border border-gray-100 overflow-hidden flex-shrink-0"
+              >
+                <anyfood-image
+                  [src]="product.imageUrl"
+                  [width]="40"
+                  [height]="40"
+                />
+              </div>
+
+              <!-- Name -->
+              <span class="flex-1 text-sm font-medium text-gray-800 truncate">
+                {{ product.name }}
+              </span>
+
+              <!-- Weight input -->
+              <div class="w-28 flex-shrink-0">
+                <anyfood-input
+                  [inputID]="'weight-' + product.id"
+                  [formField]="weightFieldAt(index)"
+                  label=""
+                  type="number"
+                  placeholder="0 г"
+                />
+              </div>
+
+              <!-- Remove -->
+              <button
+                type="button"
+                icon
+                ghost
+                sm
+                (click)="removeProduct(product)"
+                class="flex-shrink-0 text-gray-300 hover:text-red-400 transition"
+              >
+                ×
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="px-4 pb-4 pt-2 text-center text-sm text-gray-300">
+          Продукти не обрані
+        </div>
+      }
+    </div>
+
+    <!-- SECTION: Деталі -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Деталі
+        </p>
+      </div>
+      <div class="px-4 pb-4 grid grid-cols-2 gap-3">
+        <anyfood-input
+          inputID="recipeDuration"
+          [formField]="recipeForm.duration"
+          label="Час приготування (хв)"
+          type="number"
+          placeholder="30"
+        />
+        <anyfood-input
+          inputID="recipePortions"
+          [formField]="recipeForm.portions"
+          label="Кількість порцій"
+          type="number"
+          placeholder="4"
+        />
+      </div>
+    </div>
+
+    <!-- SECTION: Опис -->
+    <div
+      class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+    >
+      <div class="px-4 pt-4 pb-2">
+        <p
+          class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
+        >
+          Опис
+        </p>
+      </div>
+      <div class="px-4 pb-4">
+        <anyfood-input
+          inputID="recipeDescription"
+          [formField]="recipeForm.description"
+          label="Опис рецепту"
+          placeholder="Короткий опис страви..."
+        />
+      </div>
+    </div>
+  </div>
+</div>

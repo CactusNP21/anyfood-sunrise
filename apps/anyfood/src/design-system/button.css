@@ -50,6 +50,14 @@
       color: var(--color-primary);
     }
 
+    &[dashed] {
+      border-style: dashed;
+    }
+
+    &[outlined] {
+      background: transparent;
+    }
+
     &[danger] {
       background: var(--color-danger);
       color: #fff;

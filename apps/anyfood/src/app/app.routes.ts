@@ -29,6 +29,13 @@ export const appRoutes: Route[] = [
       import('./apps/recipe/recipe.routes').then((m) => m.RECIPE_ROUTES),
   },
   {
+    path: 'recipe-categories',
+    loadChildren: () =>
+      import('./apps/recipe-categories/recipe-categories.routes').then(
+        (m) => m.RECIPE_CATEGORIES_ROUTES,
+      ),
+  },
+  {
     path: 'profile',
     loadChildren: () =>
       import('./apps/profile/profile.routes').then((m) => m.PROFILE_ROUTES),

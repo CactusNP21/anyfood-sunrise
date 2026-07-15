@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-stone-50">
+
+  <!-- Header -->
+  <div class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-4">
+    <div class="flex items-center justify-between max-w-4xl mx-auto">
+      <div>
+        <h1 class="text-xl font-bold text-gray-900 font-serif tracking-tight">Категорії рецептів</h1>
+        <p class="text-xs text-gray-400 mt-0.5">{{ $categories().length }} категорій</p>
+      </div>
+      @if ($isAdmin()) {
+        <button routerLink="../create" lg class="flex items-center gap-2">
+          <span class="text-lg leading-none">+</span>
+          <span>Додати</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="max-w-4xl mx-auto px-4 py-5">
+
+    @if ($categories().length === 0) {
+      <!-- Empty state -->
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <span class="text-6xl mb-4">🏷</span>
+        <h2 class="text-lg font-semibold text-gray-700 font-serif mb-1">Категорій ще немає</h2>
+        <p class="text-sm text-gray-400 mb-6">Додайте першу категорію рецептів</p>
+        @if ($isAdmin()) {
+          <button routerLink="../create" lg>Додати категорію</button>
+        }
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        @for (category of $categories(); track category.id) {
+          <div
+            class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm
+                   active:scale-[0.97] transition-all cursor-pointer
+                   hover:border-orange-200 hover:shadow-md"
+            [routerLink]="'../details/' + category.id"
+          >
+            <!-- Emoji placeholder -->
+            <div class="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center text-2xl mb-3">
+              🏷
+            </div>
+
+            <!-- Name -->
+            <p class="text-sm font-semibold text-gray-900 leading-snug mb-2 line-clamp-2">
+              {{ category.name }}
+            </p>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>

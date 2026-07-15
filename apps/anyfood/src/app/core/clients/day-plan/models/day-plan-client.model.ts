@@ -1,6 +1,9 @@
+import { IRecipe } from '../../../entities/recipe/recipe.entity';
+import { IProduct } from '../../../entities/product/product.entity';
+
 export interface ICreateDayPlanRequest {
   name: string;
-  entries: IDayPlanEntry[]
+  entries: IDayPlanEntry[];
 }
 
 export interface IDayPlanRecipeEntry {
@@ -9,6 +12,8 @@ export interface IDayPlanRecipeEntry {
   name: string;
   imageUrl: string;
   weight: number;
+  time: number;
+  recipe: IRecipe
 }
 
 export interface IDayPlanProductEntry {
@@ -17,6 +22,8 @@ export interface IDayPlanProductEntry {
   name: string;
   imageUrl: string;
   weight: number;
+  time: number;
+  product: IProduct;
 }
 
 export type IDayPlanEntry = IDayPlanRecipeEntry | IDayPlanProductEntry;

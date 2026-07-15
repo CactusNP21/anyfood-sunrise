@@ -1,0 +1,11 @@
+<nav class="hidden md:flex items-center gap-1">
+  @for (route of routes; track route.link) {
+    <a
+      [routerLink]="route.link"
+      routerLinkActive="text-orange-500 bg-orange-50"
+      class="px-4 py-2 text-center rounded-lg text-sm font-medium text-gray-600 hover:text-orange-500 hover:bg-orange-50 transition"
+    >
+      {{ route.title }}
+    </a>
+  }
+</nav>

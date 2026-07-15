@@ -1,88 +1,148 @@
 @if ($recipe(); as recipe) {
-  <div class="min-h-screen bg-stone-100 p-6">
-    <div class="max-w-5xl mx-auto grid grid-cols-[1fr_280px] gap-6">
+  <div class="min-h-screen bg-stone-100 p-4 sm:p-6">
 
-      <!-- Ліва частина -->
-      <div>
-        <!-- Hero -->
-        <div class="relative rounded-2xl overflow-hidden h-72 mb-6 bg-orange-100">
-          <anyfood-image
-            [src]="recipe.imageUrl"
-            [width]="900"
-            [height]="288"
-            class="w-full h-full object-cover"
-          />
-          <span class="absolute top-4 left-4 bg-orange-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-            Основна страва
-          </span>
-        </div>
+    <app-details-top-bar
+      [backwardRoute]="'../../list'"
+      [title]="recipe.name"
+      [editRoute]="'/recipes/edit/' + recipe.id"
+      [userEntity]="recipe"
+    />
 
-        <!-- Заголовок + опис -->
-        <div class="bg-white rounded-xl border border-orange-200 p-5 mb-4">
-          <h1 class="font-serif text-2xl font-medium text-stone-900 mb-3 leading-snug">
-            {{ recipe.name }}
-          </h1>
-          <div class="flex gap-6 mb-4 text-sm text-stone-500">
-            <span>30 хв</span>
-            <span>4 порції</span>
-            <span>Легко</span>
-          </div>
-          <hr class="border-orange-100 mb-4" />
-          <p class="text-sm text-stone-500 leading-relaxed">{{ recipe.description }}</p>
-        </div>
-
-        <!-- БЖВ + калорії -->
-        <div class="grid grid-cols-4 gap-3">
-          <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
-            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">Калорії</p>
-            <p class="text-lg font-medium text-orange-500">{{ recipe.calories }}</p>
-            <p class="text-[11px] text-stone-400">ккал / 100г</p>
-          </div>
-          <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
-            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">Білки</p>
-            <p class="text-lg font-medium text-stone-900">{{ recipe.protein }}</p>
-            <p class="text-[11px] text-stone-400">г</p>
-          </div>
-          <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
-            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">Жири</p>
-            <p class="text-lg font-medium text-stone-900">{{ recipe.fat }}</p>
-            <p class="text-[11px] text-stone-400">г</p>
-          </div>
-          <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
-            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">Вуглеводи</p>
-            <p class="text-lg font-medium text-stone-900">{{ recipe.carbs }}</p>
-            <p class="text-[11px] text-stone-400">г</p>
-          </div>
-        </div>
+    <div
+      class="max-w-5xl mx-auto flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_280px] lg:gap-6 lg:items-start"
+    >
+      <!-- Hero -->
+      <div
+        class="relative rounded-2xl overflow-hidden h-56 sm:h-64 lg:h-72 bg-orange-100 lg:col-start-1 lg:row-start-1"
+      >
+        <anyfood-image
+          [src]="recipe.imageUrl"
+          [width]="900"
+          [height]="288"
+          class="w-full h-full object-cover"
+        />
+        <span
+          class="absolute top-4 left-4 bg-orange-500 text-white text-xs font-medium px-3 py-1 rounded-full"
+        >
+          Основна страва
+        </span>
       </div>
 
-      <!-- Права частина — продукти -->
-      <div class="bg-white rounded-xl border border-orange-200 p-5 sticky top-6 self-start">
-        <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-4">Інгредієнти</p>
+      <!-- Інгредієнти -->
+      <div
+        class="bg-white rounded-2xl border border-orange-200 p-5 lg:col-start-2 lg:row-start-1 lg:row-span-3 lg:sticky lg:top-6 lg:self-start"
+      >
+        <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-4">
+          Інгредієнти
+        </p>
 
         <div class="flex flex-col">
-          @for (product of recipe.products; track product.id; let last = $last) {
-            <div class="flex items-center gap-3 py-2" [class.border-b]="!last" [class.border-orange-50]="!last">
+          @for (
+            product of recipe.products;
+            track product.id;
+            let last = $last
+          ) {
+            <div
+              class="flex items-center gap-3 py-2"
+              [class.border-b]="!last"
+              [class.border-orange-50]="!last"
+            >
               <anyfood-image
                 [src]="product.imageUrl"
                 [width]="36"
                 [height]="36"
                 class="rounded-md object-cover flex-shrink-0"
               />
-              <span class="flex-1 text-sm text-stone-900 truncate">{{ product.name }}</span>
-              <span class="text-xs text-stone-400 bg-orange-50 px-2 py-0.5 rounded-full flex-shrink-0">
+              <span class="flex-1 text-sm text-stone-900 truncate">{{
+                product.name
+              }}</span>
+              <span
+                class="text-xs text-stone-400 bg-orange-50 px-2 py-0.5 rounded-full flex-shrink-0"
+              >
                 {{ product.weight }} г
               </span>
             </div>
           }
         </div>
 
-        <div class="flex justify-between items-center mt-4 pt-3 border-t border-orange-200">
-          <span class="text-xs text-stone-500">Ціна</span>
-          <span class="text-sm font-medium text-orange-500">{{ recipe.price }} грн</span>
+        <div
+          class="flex justify-between items-center mt-4 pt-3 border-t border-orange-200"
+        >
+          <span class="text-xs text-stone-500">Ціна за 100г страви</span>
+          <span class="text-sm font-medium text-orange-500"
+            >{{ recipe.price | number:'1.2-2' }} грн</span
+          >
         </div>
       </div>
 
+      <!-- Заголовок + опис -->
+      <div
+        class="bg-white rounded-2xl border border-orange-200 p-5 lg:col-start-1 lg:row-start-2"
+      >
+        <h1
+          class="font-serif text-2xl font-medium text-stone-900 mb-3 leading-snug"
+        >
+          {{ recipe.name }}
+        </h1>
+        <div class="flex gap-5 mb-4 text-sm text-stone-500">
+          <span class="flex items-center gap-1.5"
+            ><span>🕐</span>{{ recipe.duration }} хв</span
+          >
+          <span class="flex items-center gap-1.5"
+            ><span>🍽</span>{{ recipe.portions }} порції</span
+          >
+        </div>
+        <hr class="border-orange-100 mb-4" />
+        <p class="text-sm text-stone-500 leading-relaxed">
+          {{ recipe.description }}
+        </p>
+      </div>
+
+      <!-- БЖВ + калорії -->
+      <div
+        class="bg-white rounded-2xl border border-orange-200 p-5 lg:col-start-1 lg:row-start-3"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">
+              Калорійність
+            </p>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-3xl font-semibold text-orange-500">{{
+                recipe.calories | number:'1.2-2'
+              }}</span>
+              <span class="text-sm text-stone-400">ккал / 100г</span>
+            </div>
+          </div>
+          <span class="text-3xl">🔥</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 pt-4 border-t border-orange-100">
+          <div class="text-center">
+            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">
+              Білки
+            </p>
+            <p class="text-base font-medium text-stone-900">
+              {{ recipe.protein | number:'1.2-2' }} г
+            </p>
+          </div>
+          <div class="text-center">
+            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">
+              Жири
+            </p>
+            <p class="text-base font-medium text-stone-900">
+              {{ recipe.fat | number:'1.2-2' }} г
+            </p>
+          </div>
+          <div class="text-center">
+            <p class="text-[11px] uppercase tracking-wider text-stone-400 mb-1">
+              Вуглеводи
+            </p>
+            <p class="text-base font-medium text-stone-900">
+              {{ recipe.carbs  | number:'1.2-2' }} г
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 }

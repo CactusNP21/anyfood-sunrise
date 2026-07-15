@@ -10,7 +10,7 @@ import { ICategoryResponse } from '../../../../../core/clients/category/models/c
 import { AuthFacade } from '../../../../auth/data-access/facades/auth.facade';
 
 @Component({
-  selector: 'app-categories-list',
+  selector: 'app-recipe-categories-list',
   imports: [RouterLink],
   templateUrl: './categories-list.component.html',
   styleUrl: './categories-list.component.css',

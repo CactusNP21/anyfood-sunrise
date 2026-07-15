@@ -17,4 +17,5 @@ export interface IRecipe {
   fat: number;
   carbs: number;
   userId: string | null;
+  isSystem: boolean;
 }

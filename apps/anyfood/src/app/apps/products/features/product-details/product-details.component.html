@@ -2,18 +2,12 @@
   <div class="min-h-screen bg-stone-50 pb-24">
 
     <!-- Top bar -->
-    <div class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
-      <a routerLink="../../list" class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 transition text-gray-500">
-        ←
-      </a>
-      <span class="flex-1 text-sm font-semibold text-gray-900 truncate">{{ product.name }}</span>
-      @if ($canEdit()) {
-        <a [routerLink]="'/products/edit/' + product.id"
-           class="text-xs px-3 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:border-orange-400 hover:text-orange-500 transition">
-          Редагувати
-        </a>
-      }
-    </div>
+    <app-details-top-bar
+      [backwardRoute]="'../../list'"
+      [title]="product.name"
+      [editRoute]="'/products/edit/' + product.id"
+      [userEntity]="product"
+    />
 
     <div class="max-w-2xl mx-auto px-4 py-5 flex flex-col gap-4">
 
@@ -53,16 +47,16 @@
               {{ product.price | number:'1.2-2' }} ₴
             </p>
             <p class="text-xs text-gray-400">за 100г</p>
-            @if ($canEdit()) {
-              <button
-                (click)="openPriceModal()"
-                xs
-                ghost
-                class="text-xs text-orange-500 hover:underline mt-0.5"
-              >
-                Змінити ціну
-              </button>
-            }
+<!--            @if ($canEdit()) {-->
+<!--              <button-->
+<!--                (click)="openPriceModal()"-->
+<!--                xs-->
+<!--                ghost-->
+<!--                class="text-xs text-orange-500 hover:underline mt-0.5"-->
+<!--              >-->
+<!--                Змінити ціну-->
+<!--              </button>-->
+<!--            }-->
           </div>
         </div>
       </div>
@@ -149,17 +143,17 @@
         </div>
       }
 
-      <!-- Delete -->
-      @if ($canEdit()) {
-        <button
-          danger
-          lg
-          (click)="deleteProduct()"
-          class="w-full"
-        >
-          Видалити продукт
-        </button>
-      }
+<!--      &lt;!&ndash; Delete &ndash;&gt;-->
+<!--      @if ($canEdit()) {-->
+<!--        <button-->
+<!--          danger-->
+<!--          lg-->
+<!--          (click)="deleteProduct()"-->
+<!--          class="w-full"-->
+<!--        >-->
+<!--          Видалити продукт-->
+<!--        </button>-->
+<!--      }-->
 
     </div>
   </div>

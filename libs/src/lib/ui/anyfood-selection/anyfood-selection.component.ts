@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   input,
   model,
   ModelSignal,
   signal,
-  WritableSignal,
+  viewChild,
 } from '@angular/core';
 import { AnyfoodLabelComponent } from '../label/anyfood-label.component';
 import { form, FormField, FormValueControl } from '@angular/forms/signals';
@@ -35,16 +36,14 @@ function isObject(val: unknown): val is object {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnyfoodSelectionComponent<
-  TOption,
-  TValue extends TOption[keyof TOption] | TOption,
-  TValueKey extends {
-    [K in keyof TOption]: TOption[K] extends TValue ? K : never;
-  }[keyof TOption],
-> implements FormValueControl<TValue | TValue[] | undefined>
+  TOption extends object,
+  TValueKey extends keyof TOption | never,
+  TValue = TValueKey extends never ? TOption : TOption[TValueKey],
+> implements FormValueControl<TValue[]>
 {
-  value = model<TValue | TValue[] | undefined>();
-
+  value = model.required<TValue[]>();
   $options = model.required<TOption[]>({ alias: 'options' });
+
   $label = input.required<string>({ alias: 'label' });
   $placeholder = input('Введіть значення', { alias: 'placeholder' });
   $primaryKey = input<keyof TOption>(undefined, {
@@ -56,6 +55,19 @@ export class AnyfoodSelectionComponent<
   });
   $id = input.required<string>({ alias: 'inputID' });
   $imgKey = input<keyof TOption | undefined>(undefined, { alias: 'imgKey' });
+
+  $inputEl = viewChild.required<ElementRef<HTMLInputElement>>('inputElement');
+
+  $filteredOptions = computed(() => {
+    const displayKey = this.$displayKey();
+    const options = this.$options();
+    if (!displayKey) return options;
+
+    const input = this.$input().value();
+    return options.filter((option) =>
+      (option[displayKey] as string).toLowerCase().includes(input),
+    );
+  });
 
   $valueMap = computed(() => {
     const value = this.value();
@@ -135,16 +147,15 @@ export class AnyfoodSelectionComponent<
     const extracted = this.extractValue(option);
     const isAlreadySelected = this.isSelected(option);
 
-    if (Array.isArray(this.value())) {
-      (this.value as ModelSignal<TValue[]>).update((current) =>
-        isAlreadySelected
-          ? current.filter((v) => !this.valuesEqual(v as TValue, extracted))
-          : [...current, extracted],
-      );
-      return;
-    }
+    (this.value as ModelSignal<TValue[]>).update((current) =>
+      isAlreadySelected
+        ? current.filter((v) => !this.valuesEqual(v as TValue, extracted))
+        : [...current, extracted],
+    );
 
-    (this.value as ModelSignal<TValue>).set(extracted);
+    requestAnimationFrame(() => {
+      this.$inputEl().nativeElement.focus();
+    });
   }
 
   // --- Display helpers ---

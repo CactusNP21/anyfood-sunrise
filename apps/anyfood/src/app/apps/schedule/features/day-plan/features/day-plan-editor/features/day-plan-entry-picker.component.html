@@ -1,0 +1,167 @@
+<div
+  #addEntryPopover
+  id="addEntryPopover"
+  popover
+  class="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border-none bg-white shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-sm overflow-hidden"
+>
+  <!-- Tab switcher -->
+  <div class="flex gap-1 bg-stone-100 m-4 rounded-xl p-1">
+    <button
+      type="button"
+      (click)="$pickerTab.set('recipes')"
+      class="flex-1 py-2 text-sm font-semibold rounded-lg transition"
+      [ghost]="$pickerTab() === 'products'"
+    >
+      Рецепти
+    </button>
+    <button
+      type="button"
+      (click)="$pickerTab.set('products')"
+      class="flex-1 py-2 text-sm font-semibold rounded-lg transition"
+      [ghost]="$pickerTab() === 'recipes'"
+    >
+      Продукти
+    </button>
+  </div>
+
+  <!-- Item list -->
+  <div class="overflow-y-auto max-h-72 px-4 flex flex-col gap-1">
+    @if ($pickerTab() === 'products') {
+      <app-product-selection
+        id="product-selection"
+        [formField]="$selectedProducts"
+      />
+      <div class="mt-2 border-t border-gray-50">
+        @for (
+          product of $selectedProducts().value();
+          track product.id;
+          let index = $index;
+          let last = $last
+        ) {
+          <div
+            class="flex items-center gap-3 px-4 py-3"
+            [class.border-b]="!last"
+            [class.border-gray-50]="!last"
+          >
+            <!-- Product image -->
+            <div
+              class="w-10 h-10 rounded-xl bg-stone-50 border border-gray-100 overflow-hidden flex-shrink-0"
+            >
+              <anyfood-image
+                [src]="product.imageUrl"
+                [width]="40"
+                [height]="40"
+              />
+            </div>
+
+            <!-- Name -->
+            <span class="flex-1 text-sm font-medium text-gray-800 truncate">
+              {{ product.name }}
+            </span>
+
+            <!-- Weight input -->
+            <div class="w-28 flex-shrink-0">
+              <anyfood-input
+                [inputID]="'weight-' + product.id"
+                [formField]="weightProductFieldAt(index)"
+                label="Вага"
+                type="number"
+                placeholder="0 г"
+              />
+            </div>
+
+            <!-- Remove -->
+            <button
+              type="button"
+              icon
+              ghost
+              sm
+              (click)="removeProduct(product)"
+              class="shrink-0 text-gray-300 hover:text-red-400 transition"
+            >
+              ×
+            </button>
+          </div>
+        } @empty {
+          <div class="px-4 pb-4 pt-2 text-center text-sm text-gray-300">
+            Продукти не обрані
+          </div>
+        }
+      </div>
+    }
+    @if ($pickerTab() === 'recipes') {
+      <app-recipe-selection
+        id="recipe-selection"
+        [formField]="$selectedRecipes"
+      />
+
+      <div class="mt-2 border-t border-gray-50">
+        @for (
+          recipe of $selectedRecipes().value();
+          track recipe.id;
+          let index = $index;
+          let last = $last
+          ) {
+          <div
+            class="flex items-center gap-3 px-4 py-3"
+            [class.border-b]="!last"
+            [class.border-gray-50]="!last"
+          >
+            <!-- Product image -->
+            <div
+              class="w-10 h-10 rounded-xl bg-stone-50 border border-gray-100 overflow-hidden flex-shrink-0"
+            >
+              <anyfood-image
+                [src]="recipe.imageUrl"
+                [width]="40"
+                [height]="40"
+              />
+            </div>
+
+            <!-- Name -->
+            <span class="flex-1 text-sm font-medium text-gray-800 truncate">
+              {{ recipe.name }}
+            </span>
+
+            <!-- Weight input -->
+            <div class="w-28 flex-shrink-0">
+              <anyfood-input
+                [inputID]="'weight-' + recipe.id"
+                [formField]="weightRecipeFieldAt(index)"
+                label="Вага"
+                type="number"
+                placeholder="0 г"
+              />
+            </div>
+
+            <!-- Remove -->
+            <button
+              type="button"
+              icon
+              ghost
+              sm
+              (click)="removeRecipe(recipe)"
+              class="shrink-0 text-gray-300 hover:text-red-400 transition"
+            >
+              ×
+            </button>
+          </div>
+        } @empty {
+          <div class="px-4 pb-4 pt-2 text-center text-sm text-gray-300">
+            Продукти не обрані
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Action buttons -->
+  <div class="flex gap-3 p-4">
+    <button type="button" class="flex-1" ghost (click)="onCancel()">
+      Закрити
+    </button>
+    <button type="button" class="flex-1" (click)="onConfirm()">
+      Додати
+    </button>
+  </div>
+</div>

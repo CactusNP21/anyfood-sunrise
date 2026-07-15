@@ -15,7 +15,7 @@ import { AnyfoodImageComponent } from '@anyfood/ui';
 import { DecimalPipe } from '@angular/common';
 
 @Component({
-  selector: 'app-category-detail',
+  selector: 'app-recipe-category-detail',
   imports: [AnyfoodImageComponent, DecimalPipe, RouterLink],
   templateUrl: './category-detail.component.html',
   styleUrl: './category-detail.component.scss',

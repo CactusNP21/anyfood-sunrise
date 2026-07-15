@@ -4,6 +4,11 @@ import { environment } from '../../../../enviroments/enviroments';
 import { ICreateDayPlanRequest } from './models/day-plan-client.model';
 import { IRecipe } from '../../entities/recipe/recipe.entity';
 
+export interface IShortDayPlan {
+  id: number;
+  name: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -12,7 +17,7 @@ export class DayPlanClient {
   private readonly base = `${environment.apiUrl}/day-plan`;
 
   getMyDayPlans() {
-    return this.http.get<{name: string}[]>(`${this.base}/my`);
+    return this.http.get<IShortDayPlan[]>(`${this.base}/my`);
   }
 
   create(request: ICreateDayPlanRequest) {

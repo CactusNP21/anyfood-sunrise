@@ -14,6 +14,7 @@ import { AnyfoodImageComponent } from '@anyfood/ui';
 import { AuthFacade } from '../../../auth/data-access/facades/auth.facade';
 import { ButtonDirective } from '../../../../shared/directives/button.directive';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { DetailsTopBarComponent } from '../../../../shared/features/details-top-bar/details-top-bar.component';
 
 @Component({
   selector: 'app-product-details',
@@ -23,6 +24,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
     DatePipe,
     DecimalPipe,
     RouterLink,
+    DetailsTopBarComponent,
   ],
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
@@ -32,7 +34,6 @@ export class ProductDetailsComponent implements OnInit {
   private readonly client = inject(ProductClient);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly authFacade = inject(AuthFacade);
 
   readonly $productDetails = signal<IProduct | null>(null);
   readonly $productId = signal<string>('');
@@ -41,14 +42,6 @@ export class ProductDetailsComponent implements OnInit {
   readonly $isPriceModalOpen = signal(false);
   readonly $newPrice = signal<number>(0);
   readonly $isPriceUpdating = signal(false);
-
-  readonly $canEdit = computed(() => {
-    const product = this.$productDetails();
-    const user = this.authFacade.currentUser();
-    if (!product || !user) return false;
-    if (product.isSystem) return this.authFacade.isAdmin();
-    return product.userId === user.id;
-  });
 
   readonly $macroTotal = computed(() => {
     const p = this.$productDetails();
@@ -124,12 +117,10 @@ export class ProductDetailsComponent implements OnInit {
   deleteProduct() {
     const id = this.$productDetails()?.id;
     if (!id) return;
-    this.client
-      .delete(id)
-      .subscribe(() =>
-        this.router.navigate(['../../list'], {
-          relativeTo: this.activatedRoute,
-        }),
-      );
+    this.client.delete(id).subscribe(() =>
+      this.router.navigate(['../../list'], {
+        relativeTo: this.activatedRoute,
+      }),
+    );
   }
 }

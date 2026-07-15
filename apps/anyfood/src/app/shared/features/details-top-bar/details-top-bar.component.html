@@ -1,0 +1,21 @@
+<div
+  class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3"
+>
+  <a
+    [routerLink]="$backwardRoute()"
+    class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-stone-100 transition text-gray-500"
+  >
+    ←
+  </a>
+  <span class="flex-1 text-sm font-semibold text-gray-900 truncate">{{
+    $title()
+  }}</span>
+  @if ($canEdit()) {
+    <a
+      [routerLink]="$editRoute()"
+      class="text-xs px-3 py-1.5 rounded-xl border border-gray-200 text-gray-600 hover:border-orange-400 hover:text-orange-500 transition"
+    >
+      Редагувати
+    </a>
+  }
+</div>

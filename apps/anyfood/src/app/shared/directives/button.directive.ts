@@ -8,6 +8,8 @@ import { booleanAttribute, Directive, input } from '@angular/core';
     '[attr.secondary]': 'secondary() || null',
     '[attr.danger]': 'danger() || null',
     '[attr.success]': 'success() || null',
+    '[attr.outlined]': '$outlined() || null',
+    '[attr.dashed]': '$dashed() || null',
     '[attr.xs]': 'xs() || null',
     '[attr.sm]': 'sm() || null',
     '[attr.lg]': 'lg() || null',
@@ -18,6 +20,8 @@ import { booleanAttribute, Directive, input } from '@angular/core';
 })
 export class ButtonDirective {
   ghost = input(false, { transform: booleanAttribute });
+  $outlined = input(false, { transform: booleanAttribute, alias: 'outlined' });
+  $dashed = input(false, { transform: booleanAttribute, alias: 'dashed' });
   secondary = input(false, { transform: booleanAttribute });
   danger = input(false, { transform: booleanAttribute });
   success = input(false, { transform: booleanAttribute });

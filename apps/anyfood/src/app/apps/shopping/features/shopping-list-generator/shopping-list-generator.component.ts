@@ -9,21 +9,38 @@ import { IRecipe } from '../../../../core/entities/recipe/recipe.entity';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RecipeClient } from '../../../../core/clients/recipe/recipe.client';
 import { NgOptimizedImage } from '@angular/common';
+import {
+  DayPlanClient,
+  IShortDayPlan,
+} from '../../../../core/clients/day-plan/day-plan.client';
 
 @Component({
   selector: 'shopping-list-generator',
   template: `
     <div>
-      <anyfood-input [formField]="shoppingListForm.name" label="Name" inputID="shopping-list-name" />
+      <anyfood-input
+        [formField]="shoppingListForm.name"
+        label="Name"
+        inputID="shopping-list-name"
+      />
       <anyfood-selection
         [displayKey]="'name'"
         [primaryKey]="'id'"
-        [imgKey]="'imageUrl'"
-        [options]="$recipes()"
-        inputID="day-plan-products"
-        label="Products"
-        [formField]="selectedRecipes"
+        [valueKey]="'id'"
+        [options]="$dayPlans()"
+        inputID="day-plans"
+        label="Плани дня"
+        [formField]="shoppingListForm.dayPlanIds"
       />
+      <!--      <anyfood-selection-->
+      <!--        [displayKey]="'name'"-->
+      <!--        [primaryKey]="'id'"-->
+      <!--        [imgKey]="'imageUrl'"-->
+      <!--        [options]="$recipes()"-->
+      <!--        inputID="day-plan-products"-->
+      <!--        label="Products"-->
+      <!--        [formField]="selectedRecipes"-->
+      <!--      />-->
       <div>
         @for (
           entry of selectedRecipes().value();
@@ -62,16 +79,23 @@ import { NgOptimizedImage } from '@angular/common';
 })
 export class ShoppingListGeneratorComponent {
   recipeClient = inject(RecipeClient);
+  dayPlansClient = inject(DayPlanClient);
   shoppingListClient = inject(ShoppingListClient);
 
   $formModel = signal<IGenerateShoppingListRequest>({
     name: '',
     recipes: [],
+    dayPlanIds: []
   });
 
   $recipes = toSignal(this.recipeClient.getAll(), { initialValue: [] });
+  $dayPlans = toSignal(this.dayPlansClient.getMyDayPlans(), {
+    initialValue: [],
+  });
 
   selectedRecipes = form(signal<IRecipe[]>([]));
+
+  selectedPlans = form(signal<IShortDayPlan[]>([]));
 
   shoppingListForm = form(this.$formModel);
 
@@ -97,15 +121,20 @@ export class ShoppingListGeneratorComponent {
 
         return [
           ...afterRemove,
-          ...added.map((p) => ({ recipeVersionId: p.latestVersionId, weight: 0 })),
+          ...added.map((p) => ({
+            recipeVersionId: p.latestVersionId,
+            weight: 0,
+          })),
         ];
       });
     });
   }
 
   generateShoppingList() {
-    this.shoppingListClient.generate(this.shoppingListForm().value()).subscribe((r) => {
-      console.log(r);
-    });
-  };
+    this.shoppingListClient
+      .generate(this.shoppingListForm().value())
+      .subscribe((r) => {
+        console.log(r);
+      });
+  }
 }

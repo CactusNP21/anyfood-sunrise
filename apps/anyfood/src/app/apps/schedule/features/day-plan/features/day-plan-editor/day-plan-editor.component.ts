@@ -2,24 +2,37 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   signal,
 } from '@angular/core';
-import { AnyfoodInputComponent, AnyfoodSelectionComponent } from '@anyfood/ui';
+import { AnyfoodInputComponent } from '@anyfood/ui';
 import {
   ICreateDayPlanRequest,
+  IDayPlanEntry,
   IDayPlanProductEntry,
   IDayPlanRecipeEntry,
 } from '../../../../../../core/clients/day-plan/models/day-plan-client.model';
 import { form, FormField } from '@angular/forms/signals';
-import { IProduct } from '../../../../../../core/entities/product/product.entity';
-import { IRecipe } from '../../../../../../core/entities/recipe/recipe.entity';
 import { RecipeClient } from '../../../../../../core/clients/recipe/recipe.client';
 import { ProductClient } from '../../../../../../core/clients/product/product.client';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NgOptimizedImage } from '@angular/common';
 import { DayPlanClient } from '../../../../../../core/clients/day-plan/day-plan.client';
+import { RouterLink } from '@angular/router';
+import { ButtonDirective } from '../../../../../../shared/directives/button.directive';
+import {
+  DayPlanEntryPickerComponent,
+  IDayPlanEntryFormModel,
+} from './features/day-plan-entry-picker.component';
+import { IRecipe } from '../../../../../../core/entities/recipe/recipe.entity';
+import { IProduct } from '../../../../../../core/entities/product/product.entity';
+import { DecimalPipe } from '@angular/common';
+import { MinutesToTimePipe } from './pipes/minutes-to-time.pipe';
+
+interface PickerSelection {
+  type: 'recipe' | 'product';
+  id: string;
+  weight: number;
+}
 
 @Component({
   selector: 'app-day-plan-editor',
@@ -28,9 +41,12 @@ import { DayPlanClient } from '../../../../../../core/clients/day-plan/day-plan.
   standalone: true,
   imports: [
     AnyfoodInputComponent,
-    AnyfoodSelectionComponent,
     FormField,
-    NgOptimizedImage,
+    RouterLink,
+    ButtonDirective,
+    DayPlanEntryPickerComponent,
+    DecimalPipe,
+    MinutesToTimePipe,
   ],
 })
 export class DayPlanEditorComponent {
@@ -48,72 +64,215 @@ export class DayPlanEditorComponent {
 
   dayPlanForm = form(this.$model);
 
-  selectedProducts = form<IProduct[]>(signal<IProduct[]>([]));
-  selectedRecipes = form<IRecipe[]>(signal<IRecipe[]>([]));
+  $timeSlots = signal<{ time: number; entries: IDayPlanEntry[] }[]>([]);
 
-  constructor() {
-    effect(() => {
-      const selectedProducts = this.selectedProducts().value();
-      const selectedRecipes = this.selectedRecipes().value();
+  $totalNutrients = computed(() =>
+    this.$timeSlots()
+      .flatMap((slot) => slot.entries)
+      .reduce(
+        (sum, entry) => {
+          const ratio = entry.weight / 100;
+          const productOrRecipe = this.extractProductOrRecipe(entry);
+          sum.calories += productOrRecipe.calories * ratio;
+          sum.carbs += productOrRecipe.carbs * ratio;
+          sum.fat += productOrRecipe.fat * ratio;
+          sum.protein += productOrRecipe.protein * ratio;
+          return sum;
+        },
+        { calories: 0, protein: 0, fat: 0, carbs: 0 },
+      ),
+  );
 
-      const selectedProductIds = new Set(selectedProducts.map((p) => p.id));
-      const selectedRecipeIds = new Set(selectedRecipes.map((r) => r.id));
+  private extractProductOrRecipe(entry: IDayPlanEntry): IRecipe | IProduct {
+    return entry.productId
+      ? (entry as IDayPlanProductEntry).product
+      : (entry as IDayPlanRecipeEntry).recipe;
+  }
 
-      this.dayPlanForm.entries().value.update((entries) => {
-        // Split current entries by type
-        const productEntries = entries.filter(
-          (e): e is IDayPlanProductEntry => e.productId != null,
-        );
-        const recipeEntries = entries.filter(
-          (e): e is IDayPlanRecipeEntry => e.recipeId != null,
-        );
+  $newTimeSlot = signal('00:00');
+  $timeSlotError = signal<string | null>(null);
 
-        // Sync product entries
-        const syncedProducts = [
-          ...productEntries.filter((e) =>
-            selectedProductIds.has(e.productId),
-          ), // keep still-selected
-          ...selectedProducts
-            .filter(
-              (p) => !productEntries.some((e) => e.productId === p.id),
-            ) // add new
-            .map(
-              (p): IDayPlanProductEntry => ({
-                productId: p.id,
-                weight: 0,
-                imageUrl: p.imageUrl,
-                name: p.name,
-              }),
-            ),
-        ];
+  $openPickerSlot = signal<number | null>(null);
+  $pickerTab = signal<'recipes' | 'products'>('recipes');
+  $pickerSelections = signal<PickerSelection[]>([]);
 
-        // Sync recipe entries
-        const syncedRecipes = [
-          ...recipeEntries.filter((e) =>
-            selectedRecipeIds.has(e.recipeId),
-          ), // keep still-selected
-          ...selectedRecipes
-            .filter(
-              (r) => !recipeEntries.some((e) => e.recipeId === r.id),
-            ) // add new
-            .map(
-              (r): IDayPlanRecipeEntry => ({
-                recipeId: r.id,
-                weight: 0,
-                imageUrl: r.imageUrl,
-                name: r.name,
-              }),
-            ),
-        ];
+  prepareAddTimePopover() {
+    this.$newTimeSlot.set('00:00');
+    this.$timeSlotError.set(null);
+  }
 
-        return [...syncedProducts, ...syncedRecipes];
+  closeAddTimePopover() {
+    this.$timeSlotError.set(null);
+  }
+
+  addTimeSlot(popover: HTMLElement) {
+    const time = this.$newTimeSlot();
+    if (!time) {
+      this.$timeSlotError.set('Оберіть час');
+      return;
+    }
+
+    const timeInMin = this.timeToMinutes(time);
+
+    const exists = this.$timeSlots().some((slot) => slot.time === timeInMin);
+    if (exists) {
+      this.$timeSlotError.set('Такий час вже додано');
+      return;
+    }
+
+    this.$timeSlots.update((slots) =>
+      [...slots, { time: timeInMin, entries: [] }].sort(
+        (a, b) => a.time - b.time,
+      ),
+    );
+    popover.hidePopover();
+    this.closeAddTimePopover();
+  }
+
+  $editedTimeSlot = signal<{ time: number; entries: IDayPlanEntry[] } | null>(
+    null,
+  );
+
+  editEntries(entriesForm: IDayPlanEntryFormModel) {
+    this.$timeSlots.update((current) => {
+      const editedTimeSlot = this.$editedTimeSlot();
+      if (editedTimeSlot === null) return current;
+
+      const editedTimeSlotIndex = current.findIndex(
+        (timeSlot) => timeSlot.time === editedTimeSlot?.time,
+      );
+      if (editedTimeSlotIndex === -1) return current;
+      return current.toSpliced(editedTimeSlotIndex, 1, {
+        time: editedTimeSlot.time,
+        entries: [
+          ...entriesForm.recipes.map(
+            (recipe): IDayPlanRecipeEntry => ({
+              ...recipe,
+              recipeId: recipe.id,
+              recipe,
+            }),
+          ),
+          ...entriesForm.products.map(
+            (product): IDayPlanProductEntry => ({
+              ...product,
+              product,
+              productId: product.id,
+            }),
+          ),
+        ],
       });
     });
   }
 
+  private timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+  }
+
+  openPickerFor(time: number, popover: HTMLElement) {
+    this.$openPickerSlot.set(time);
+    this.$pickerSelections.set([]);
+    this.$pickerTab.set('recipes');
+    popover.showPopover();
+  }
+
+  closePickerPopover(popover: HTMLElement) {
+    this.$openPickerSlot.set(null);
+    this.$pickerSelections.set([]);
+    popover.hidePopover();
+  }
+
+  togglePickerItem(type: 'recipe' | 'product', id: string | number) {
+    const sid = String(id);
+    this.$pickerSelections.update((selections) => {
+      const exists = selections.some((s) => s.type === type && s.id === sid);
+      if (exists) {
+        return selections.filter((s) => !(s.type === type && s.id === sid));
+      }
+      return [...selections, { type, id: sid, weight: 100 }];
+    });
+  }
+
+  isSelectedInPicker(type: 'recipe' | 'product', id: string | number): boolean {
+    return this.$pickerSelections().some(
+      (s) => s.type === type && s.id === String(id),
+    );
+  }
+
+  getPickerItemWeight(type: 'recipe' | 'product', id: string | number): number {
+    return (
+      this.$pickerSelections().find(
+        (s) => s.type === type && s.id === String(id),
+      )?.weight ?? 100
+    );
+  }
+
+  setPickerItemWeight(
+    type: 'recipe' | 'product',
+    id: string | number,
+    weight: number,
+  ) {
+    const sid = String(id);
+    this.$pickerSelections.update((selections) =>
+      selections.map((s) =>
+        s.type === type && s.id === sid ? { ...s, weight } : s,
+      ),
+    );
+  }
+
+  confirmPickerSelections(popover: HTMLElement) {
+    const time = this.$openPickerSlot();
+    if (!time) return;
+
+    const selections = this.$pickerSelections();
+
+    this.$timeSlots.update((slots) =>
+      slots.map((slot) => {
+        if (slot.time !== time) return slot;
+
+        const newEntries: IDayPlanEntry[] = selections.map((sel) => {
+          if (sel.type === 'product') {
+            const product = this.$products().find(
+              (p) => String(p.id) === sel.id,
+            )!;
+            return {
+              productId: product.id,
+              name: product.name,
+              imageUrl: product.imageUrl,
+              weight: sel.weight,
+              time,
+              product,
+            } as IDayPlanProductEntry;
+          } else {
+            const recipe = this.$recipes().find(
+              (r) => String(r.id) === sel.id,
+            )!;
+            return {
+              recipeId: recipe.id,
+              name: recipe.name,
+              imageUrl: recipe.imageUrl,
+              weight: sel.weight,
+              time,
+              recipe,
+            } as IDayPlanRecipeEntry;
+          }
+        });
+
+        return { ...slot, entries: [...slot.entries, ...newEntries] };
+      }),
+    );
+
+    this.closePickerPopover(popover);
+  }
+
   createDayPlan() {
-    this.dayPlanClient.create(this.dayPlanForm().value()).subscribe((r) => {
+    const formValue = this.dayPlanForm().value();
+    const request: ICreateDayPlanRequest = {
+      ...formValue,
+      entries: this.$timeSlots().flatMap((slot) => slot.entries),
+    };
+    this.dayPlanClient.create(request).subscribe((r) => {
       console.log(r);
-    })
+    });
   }
 }
