@@ -1,0 +1,24 @@
+<section class="flex flex-col mb-5">
+  @for (timeSlot of $timeSlots(); track timeSlot) {
+    <div class="flex gap-3 px-4 mb-2">
+      <div class="flex flex-col items-center w-10 shrink-0">
+        <span class="text-xs">{{ timeSlot.time | minutesToTime }}</span>
+        <span class="w-px flex-1 bg-gray-600 mt-1"></span>
+      </div>
+
+      <div class="mb-5 mt-5 w-full grid grid-cols-1 gap-3">
+        <div class="flex flex-col">
+          @for (entry of timeSlot.entries; track $index) {
+            <div
+              class="flex items-center bg-orange-50 border text-orange-800 border-orange-200 rounded-xl py-2 px-4"
+            >
+              <p class="flex-1">{{ entry.name }}</p>
+              <p class="text-xs text-orange-800">{{ entry.weight }} г</p>
+            </div>
+          }
+        </div>
+        <ng-content></ng-content>
+      </div>
+    </div>
+  }
+</section>

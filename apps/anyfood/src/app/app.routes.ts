@@ -24,6 +24,11 @@ export const appRoutes: Route[] = [
       import('./apps/products/products.routes').then((m) => m.PRODUCT_ROUTES),
   },
   {
+    path: 'fridge',
+    loadChildren: () =>
+      import('./apps/fridge/fridge.routes').then((m) => m.FRIDGE_ROUTES),
+  },
+  {
     path: 'recipes',
     loadChildren: () =>
       import('./apps/recipe/recipe.routes').then((m) => m.RECIPE_ROUTES),

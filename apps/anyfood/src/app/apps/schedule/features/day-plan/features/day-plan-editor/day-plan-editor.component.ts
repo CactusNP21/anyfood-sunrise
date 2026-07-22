@@ -8,7 +8,7 @@ import {
 import { AnyfoodInputComponent } from '@anyfood/ui';
 import {
   ICreateDayPlanRequest,
-  IDayPlanEntry,
+  ICreateDayPlanEntry,
   IDayPlanProductEntry,
   IDayPlanRecipeEntry,
 } from '../../../../../../core/clients/day-plan/models/day-plan-client.model';
@@ -64,7 +64,7 @@ export class DayPlanEditorComponent {
 
   dayPlanForm = form(this.$model);
 
-  $timeSlots = signal<{ time: number; entries: IDayPlanEntry[] }[]>([]);
+  $timeSlots = signal<{ time: number; entries: ICreateDayPlanEntry[] }[]>([]);
 
   $totalNutrients = computed(() =>
     this.$timeSlots()
@@ -83,7 +83,7 @@ export class DayPlanEditorComponent {
       ),
   );
 
-  private extractProductOrRecipe(entry: IDayPlanEntry): IRecipe | IProduct {
+  private extractProductOrRecipe(entry: ICreateDayPlanEntry): IRecipe | IProduct {
     return entry.productId
       ? (entry as IDayPlanProductEntry).product
       : (entry as IDayPlanRecipeEntry).recipe;
@@ -129,7 +129,7 @@ export class DayPlanEditorComponent {
     this.closeAddTimePopover();
   }
 
-  $editedTimeSlot = signal<{ time: number; entries: IDayPlanEntry[] } | null>(
+  $editedTimeSlot = signal<{ time: number; entries: ICreateDayPlanEntry[] } | null>(
     null,
   );
 
@@ -230,7 +230,7 @@ export class DayPlanEditorComponent {
       slots.map((slot) => {
         if (slot.time !== time) return slot;
 
-        const newEntries: IDayPlanEntry[] = selections.map((sel) => {
+        const newEntries: ICreateDayPlanEntry[] = selections.map((sel) => {
           if (sel.type === 'product') {
             const product = this.$products().find(
               (p) => String(p.id) === sel.id,

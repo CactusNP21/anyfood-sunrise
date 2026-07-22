@@ -89,9 +89,7 @@ export class ShoppingListGeneratorComponent {
   });
 
   $recipes = toSignal(this.recipeClient.getAll(), { initialValue: [] });
-  $dayPlans = toSignal(this.dayPlansClient.getMyDayPlans(), {
-    initialValue: [],
-  });
+  $dayPlans = this.dayPlansClient.getMyDayPlansSignal();
 
   selectedRecipes = form(signal<IRecipe[]>([]));
 

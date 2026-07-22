@@ -11,6 +11,7 @@ export type ICreateProductRequest = Omit<
   | 'userId'
   | 'priceHistory'
   | 'glycemicIndex'
+  | 'path'
 >
 
 // Update — same shape

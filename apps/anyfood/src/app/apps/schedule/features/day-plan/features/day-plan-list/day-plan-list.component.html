@@ -1,10 +1,46 @@
-<div class="flex flex-col">
-  <button class="ml-auto" type="button" routerLink="../create">Створити план дня</button>
+<div class="min-h-screen bg-stone-50">
+  <!-- Header -->
 
-  <div class="grid grid-cols-2">
-    @for (dayPlan of $dayPlans(); track dayPlan) {
-      <div class="p-3 border border-black">
-        <p>{{ dayPlan.name }}</p>
+  <app-entity-listy-top-bar
+    title="Плани дня"
+    [subtitle]="$dayPlans().length + 'планів'"
+  />
+  <!-- Grid -->
+  <div class="max-w-4xl mx-auto px-4 py-5">
+    @if ($dayPlans().length === 0) {
+      <!-- Empty state -->
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <span class="text-6xl mb-4">🏷</span>
+        <h2 class="text-lg font-semibold text-gray-700 font-serif mb-1">
+          Категорій ще немає
+        </h2>
+        <p class="text-sm text-gray-400 mb-6">
+          Додайте першу категорію рецептів
+        </p>
+        <button routerLink="../create" lg>Додати категорію</button>
+      </div>
+    } @else {
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        @for (category of $dayPlans(); track category.id) {
+          <div
+            class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm active:scale-[0.97] transition-all cursor-pointer hover:border-orange-200 hover:shadow-md"
+            [routerLink]="'../details/' + category.id"
+          >
+            <!-- Emoji placeholder -->
+            <div
+              class="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center text-2xl mb-3"
+            >
+              🏷
+            </div>
+
+            <!-- Name -->
+            <p
+              class="text-sm font-semibold text-gray-900 leading-snug mb-2 line-clamp-2"
+            >
+              {{ category.name }}
+            </p>
+          </div>
+        }
       </div>
     }
   </div>

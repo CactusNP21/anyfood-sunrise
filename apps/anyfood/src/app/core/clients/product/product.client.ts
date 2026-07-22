@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, httpResource } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   ICreateProductRequest,
@@ -29,6 +29,16 @@ export class ProductClient {
 
   getAll(): Observable<IProduct[]> {
     return this.http.get<IProduct[]>(`${this.base}`);
+  }
+
+  private readonly productsResource = httpResource<IProduct[]>(() => this.base, {defaultValue: []});
+
+  getProductsSignal() {
+    return this.productsResource.asReadonly().value;
+  }
+
+  reloadProducts() {
+    this.productsResource.reload();
   }
 
   getMyProducts(): Observable<IProduct[]> {

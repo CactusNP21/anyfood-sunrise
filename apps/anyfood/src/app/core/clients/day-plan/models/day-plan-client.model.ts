@@ -3,7 +3,7 @@ import { IProduct } from '../../../entities/product/product.entity';
 
 export interface ICreateDayPlanRequest {
   name: string;
-  entries: IDayPlanEntry[];
+  entries: ICreateDayPlanEntry[];
 }
 
 export interface IDayPlanRecipeEntry {
@@ -26,4 +26,4 @@ export interface IDayPlanProductEntry {
   product: IProduct;
 }
 
-export type IDayPlanEntry = IDayPlanRecipeEntry | IDayPlanProductEntry;
+export type ICreateDayPlanEntry = IDayPlanRecipeEntry | IDayPlanProductEntry;

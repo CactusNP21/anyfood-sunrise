@@ -1,5 +1,6 @@
 export interface IDayPlanEntry {
   id: number;
+  name: string;
   dayPlanId: number;
   productId: number;
   weight: string;

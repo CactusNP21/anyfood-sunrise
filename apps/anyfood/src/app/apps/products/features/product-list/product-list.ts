@@ -15,11 +15,5 @@ import { AnyfoodImageComponent } from '@anyfood/ui';
 export class ProductList {
   productsClient = inject(ProductClient);
 
-  $products = signal<IProduct[]>([]);
-
-  ngOnInit() {
-    this.productsClient.getAll().subscribe((response) => {
-      this.$products.set(response);
-    });
-  }
+  $products = this.productsClient.getProductsSignal();
 }

@@ -16,5 +16,7 @@ export interface IProduct {
     id: number;
     price: number;
   }[];
+  parentProductId: number | null;
+  path: string;
 }
 

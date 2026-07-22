@@ -10,7 +10,15 @@ import { AuthFacade } from '../../../data-access/facades/auth.facade';
 import { LoadingService } from '../../../../../core/services/loading.service';
 import { AUTH_LOADING_KEYS } from '../../../constants/auth-loading-keys.constant';
 import { IRegisterRequest } from '../../../models/register-request.model';
-import { email, form, FormField, minLength, pattern, required } from '@angular/forms/signals';
+import {
+  email,
+  form,
+  FormField,
+  minLength,
+  pattern,
+  required,
+  validate,
+} from '@angular/forms/signals';
 import { AnyfoodInputComponent } from '@anyfood/ui';
 
 function passwordMatchValidator(control: AbstractControl) {
@@ -49,20 +57,35 @@ export class RegisterComponent implements OnInit {
   });
 
   form = form(this.$registerFormModel, (form) => {
-    required(form.name, {message: 'Імʼя обовʼязкове'});
-    required(form.username, {message: 'Логін обовʼязковий'});
-    required(form.email, {message: 'Пошта обовʼязкова'});
-    required(form.password, {message: 'Пароль обовʼязковий'});
-    required(form.confirmPassword, {message: "Повторити пароль обовʼязково"});
+    required(form.name, { message: 'Імʼя обовʼязкове' });
+    required(form.username, { message: 'Логін обовʼязковий' });
+    required(form.email, { message: 'Пошта обовʼязкова' });
+    required(form.password, { message: 'Пароль обовʼязковий' });
+    required(form.confirmPassword, { message: 'Повторити пароль обовʼязково' });
 
-    email(form.email, {message: 'Неправильна пошта'});
-
-    minLength(form.name, 2, {message: 'Мінімальне імʼя 2 символи'});
-    minLength(form.username, 3, {message: 'Мінімальна довжина логіну 2 символи'});
-    minLength(form.password, 8, {
-      message: 'Мінімальна довжина паролю 8 символів',
+    validate(form.confirmPassword, ({ value, valueOf }) => {
+      const currentConfirmPassword = value();
+      const password = valueOf(form.password);
+      if (password !== currentConfirmPassword)
+        return [{ kind: 'mismatch', message: 'Паролі не співпадають' }];
+      return [];
     });
 
+    email(form.email, { message: 'Неправильна пошта' });
+
+    minLength(form.name, 2, { message: 'Мінімальне імʼя 2 символи' });
+    minLength(form.username, 3, {
+      message: 'Мінімальна довжина логіну 2 символи',
+    });
+
+    pattern(
+      form.password,
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[$&+,:;=?@#|'<>.^*()%!-]).{8,}$/,
+      {
+        message:
+          'Пароль має містити хоча б один спецсимвол, літеру у верхньому регістрі та цифру',
+      },
+    );
   });
 
   ngOnInit() {

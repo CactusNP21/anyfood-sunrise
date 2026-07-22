@@ -1,0 +1,18 @@
+<div class="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-4">
+  <div class="flex items-center justify-between max-w-4xl mx-auto">
+    <div>
+      <h1 class="text-xl font-bold text-gray-900 font-serif tracking-tight">
+        {{ $title() }}
+      </h1>
+      <p class="text-xs text-gray-400 mt-0.5">
+        {{ $subtitle() }}
+      </p>
+    </div>
+    @if (authFacade.isAdmin()) {
+      <button routerLink="../create" lg class="flex items-center gap-2">
+        <span class="text-lg leading-none">+</span>
+        <span>Додати</span>
+      </button>
+    }
+  </div>
+</div>

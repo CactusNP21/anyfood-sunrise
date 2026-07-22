@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <!-- SECTION: Категорії -->
+    <!-- SECTION: Батьківський продукт> -->
     <div
       class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
     >
@@ -68,18 +68,20 @@
         <p
           class="text-[11px] uppercase tracking-wider text-gray-400 font-medium"
         >
-          Категорії
+          Батьківській продукт
         </p>
       </div>
       <div class="px-4 pb-4">
         <anyfood-selection
-          inputID="productCategoryIds"
-          [formField]="productForm.categories"
-          label="Категорії продукту"
-          [options]="$categories()"
+          inputID="parentProductId"
+          [formField]="productForm.parentProductId"
+          label="Батьківський продукт"
+          [options]="$products()"
           [primaryKey]="'id'"
           [valueKey]="'id'"
           [displayKey]="'name'"
+          [imgKey]="'imageUrl'"
+          [multiple]="false"
         />
       </div>
     </div>

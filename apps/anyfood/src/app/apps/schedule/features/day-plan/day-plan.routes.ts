@@ -10,6 +10,10 @@ export const DAY_PLAN_ROUTES: Route[] = [
         redirectTo: 'list',
       },
       {
+        path: 'details/:id',
+        loadComponent: () => import('./features/day-plan-detail/day-plan-detail.component').then(m => m.DayPlanDetailComponent),
+      },
+      {
         path: 'list',
         loadComponent: () =>
           import('./features/day-plan-list/day-plan-list.component').then(

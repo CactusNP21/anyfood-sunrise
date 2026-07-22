@@ -17,9 +17,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strict": true,
-    "baseUrl": ".",
     "paths": {
-      "@anyfood/ui": ["libs/src/index.ts"],
+      "@anyfood/ui": ["./libs/src/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

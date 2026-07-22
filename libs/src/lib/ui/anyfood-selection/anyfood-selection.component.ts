@@ -39,16 +39,16 @@ export class AnyfoodSelectionComponent<
   TOption extends object,
   TValueKey extends keyof TOption | never,
   TValue = TValueKey extends never ? TOption : TOption[TValueKey],
-> implements FormValueControl<TValue[]>
+> implements FormValueControl<TValue[] | TValue>
 {
-  value = model.required<TValue[]>();
+  value = model.required<TValue[] | TValue>();
   $options = model.required<TOption[]>({ alias: 'options' });
+
+  $multiple = input(true, { alias: 'multiple' });
 
   $label = input.required<string>({ alias: 'label' });
   $placeholder = input('Введіть значення', { alias: 'placeholder' });
-  $primaryKey = input<keyof TOption>(undefined, {
-    alias: 'primaryKey',
-  });
+  $primaryKey = input<keyof TOption>(undefined, { alias: 'primaryKey' });
   $valueKey = input<TValueKey>(undefined, { alias: 'valueKey' });
   $displayKey = input<keyof TOption | undefined>(undefined, {
     alias: 'displayKey',
@@ -69,8 +69,14 @@ export class AnyfoodSelectionComponent<
     );
   });
 
+  // Single source of truth for "what's currently selected", regardless of mode.
+  private $valuesArray = computed<TValue[]>(() => {
+    if (this.$multiple()) return this.value() as TValue[];
+    const v = this.value() as TValue | undefined;
+    return v === undefined || v === null ? [] : [v];
+  });
+
   $valueMap = computed(() => {
-    const value = this.value();
     const primaryKey = this.$primaryKey();
     const valueKey = this.$valueKey();
     const map = new Map<unknown, TOption>();
@@ -84,11 +90,7 @@ export class AnyfoodSelectionComponent<
       return item;
     };
 
-    const values = Array.isArray(value) ? value : [value];
-
-    for (const item of values) {
-      // якщо є valueKey — item це примітив витягнутий з об'єкта,
-      // тому ключем є сам item, інакше — витягуємо через primaryKey
+    for (const item of this.$valuesArray()) {
       const key = valueKey !== undefined ? item : extractKey(item);
       map.set(key, item as unknown as TOption);
     }
@@ -110,8 +112,6 @@ export class AnyfoodSelectionComponent<
     });
   });
 
-  // --- Core helpers ---
-
   private extractValue(option: TOption): TValue {
     const valueKey = this.$valueKey();
     if (valueKey !== undefined) {
@@ -132,33 +132,30 @@ export class AnyfoodSelectionComponent<
   }
 
   isSelected(option: TOption): boolean {
-    const value = this.value();
     const extracted = this.extractValue(option);
-
-    if (Array.isArray(value)) {
-      return value.some((v) => this.valuesEqual(v as TValue, extracted));
-    }
-    return this.valuesEqual(value as TValue, extracted);
+    return this.$valuesArray().some((v) => this.valuesEqual(v, extracted));
   }
-
-  // --- Actions ---
 
   toggleOption(option: TOption): void {
     const extracted = this.extractValue(option);
-    const isAlreadySelected = this.isSelected(option);
 
-    (this.value as ModelSignal<TValue[]>).update((current) =>
-      isAlreadySelected
-        ? current.filter((v) => !this.valuesEqual(v as TValue, extracted))
-        : [...current, extracted],
-    );
+    if (this.$multiple()) {
+      const isAlreadySelected = this.isSelected(option);
+      (this.value as ModelSignal<TValue[]>).update((current) =>
+        isAlreadySelected
+          ? current.filter((v) => !this.valuesEqual(v, extracted))
+          : [...current, extracted],
+      );
+    } else {
+      // single mode: just replace, don't toggle off — keeps the type TValue (no undefined)
+      (this.value as ModelSignal<TValue>).set(extracted);
+      this.closeOverlay();
+    }
 
     requestAnimationFrame(() => {
       this.$inputEl().nativeElement.focus();
     });
   }
-
-  // --- Display helpers ---
 
   getDisplay(option: TOption): string {
     const displayKey = this.$displayKey();
@@ -169,8 +166,6 @@ export class AnyfoodSelectionComponent<
     const imgKey = this.$imgKey();
     return imgKey ? (option[imgKey] as unknown as string) || 'empty' : '';
   }
-
-  // --- Overlay ---
 
   openOverlay(): void {
     this.$isOverlayOpen.set(true);

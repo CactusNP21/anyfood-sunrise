@@ -12,8 +12,13 @@ import { ICategoryResponse } from '../../../../core/clients/category/models/cate
 import { form, FormField, required } from '@angular/forms/signals';
 import { ProductClient } from '../../../../core/clients/product/product.client';
 import { ICreateProductRequest } from '../../../../core/clients/product/models/product-client.model';
-import { AnyfoodImageComponent, AnyfoodInputComponent, AnyfoodSelectionComponent } from '@anyfood/ui';
+import {
+  AnyfoodImageComponent,
+  AnyfoodInputComponent,
+  AnyfoodSelectionComponent,
+} from '@anyfood/ui';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { IProduct } from '../../../../core/entities/product/product.entity';
 
 @Component({
   selector: 'app-product-editor',
@@ -38,6 +43,7 @@ export class ProductEditorComponent implements OnInit {
     name: '',
     carbs: 0,
     categories: [],
+    parentProductId: null,
     fat: 0,
     imageUrl: '',
     price: 0,
@@ -46,6 +52,16 @@ export class ProductEditorComponent implements OnInit {
 
   $categories = toSignal(this.categoryClient.getAll(), {
     initialValue: [] as ICategoryResponse[],
+  });
+
+  $currentProduct = signal<IProduct | null>(null);
+
+  $products = computed(() => {
+    const products = this.productClient.getProductsSignal()();
+    const currentProduct = this.$currentProduct();
+    if (!currentProduct) return products;
+    const parentProductIds = currentProduct.path.split('.').map((id) => Number(id));
+    return products.filter((product) => product.id !== currentProduct.id || parentProductIds.includes(product.id));
   });
 
   $id = signal<string | null>(null);
@@ -65,6 +81,7 @@ export class ProductEditorComponent implements OnInit {
 
     this.$id.set(id);
     this.productClient.getById(id).subscribe((product) => {
+      this.$currentProduct.set(product);
       this.$productFormModel.set({
         name: product.name,
         carbs: product.carbs,
@@ -73,6 +90,7 @@ export class ProductEditorComponent implements OnInit {
         imageUrl: product.imageUrl,
         price: product.price,
         protein: product.protein,
+        parentProductId: product.parentProductId,
       });
     });
   }
@@ -89,6 +107,7 @@ export class ProductEditorComponent implements OnInit {
   createProduct() {
     const formValue = this.productForm().value();
     this.productClient.create(formValue).subscribe((response) => {
+      this.productClient.reloadProducts();
       this.router.navigate(['../details', response.id], {
         relativeTo: this.activatedRoute,
       });
@@ -101,6 +120,7 @@ export class ProductEditorComponent implements OnInit {
 
     const formValue = this.productForm().value();
     this.productClient.update(id, formValue).subscribe((response) => {
+      this.productClient.reloadProducts();
       this.router.navigate(['../details', response.id], {
         relativeTo: this.activatedRoute,
       });
